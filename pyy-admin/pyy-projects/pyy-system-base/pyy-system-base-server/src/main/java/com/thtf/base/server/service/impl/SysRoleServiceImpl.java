@@ -1,5 +1,6 @@
 package com.thtf.base.server.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -87,7 +88,19 @@ public class SysRoleServiceImpl implements SysRoleService {
         log.info("### 角色删除完毕 ###");
     }
 
-	/**
+    @Override
+    public void deleteBatch(List<String> ids) {
+        // 参数校验
+        if (CollUtil.isEmpty(ids)) {
+            ExceptionCast.cast(BaseServerCode.DEL_IDS_ISEMPTY);
+        }
+        int rows = sysRoleMapper.deleteBatchIds(ids);
+        if (rows < 1) {
+            ExceptionCast.cast(BaseServerCode.DELETE_ERROR);
+        }
+    }
+
+    /**
      * 角色修改
      * @param id
      * @param sysRoleSaveOrUpdateVO

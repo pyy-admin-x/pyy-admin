@@ -38,6 +38,12 @@ public interface SysRoleService {
 	void delete(String id);
 
     /**
+     * 批量删除角色
+     * @param ids
+     */
+    void deleteBatch(List<String> ids);
+
+    /**
      * 根据角色ID查询
      * @param id
      */
@@ -58,4 +64,5 @@ public interface SysRoleService {
      * @return
      */
     Pager<SysRoleVO> findList(SysRoleQueryConditionVO queryConditionVO, int page, int size);
+
 }

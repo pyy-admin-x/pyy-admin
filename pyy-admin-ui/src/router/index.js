@@ -117,6 +117,12 @@ export const constantRoutes = [
         component: () => import('@/views/system/menu/index.vue'),
         meta: { title: '菜单管理', icon: 'menu' }
       },
+      {
+        path: '/system/role',
+        name: 'Role',
+        component: () => import('@/views/system/role/index.vue'),
+        meta: { title: '角色管理', icon: 'role' }
+      },
     ]
   },
   {

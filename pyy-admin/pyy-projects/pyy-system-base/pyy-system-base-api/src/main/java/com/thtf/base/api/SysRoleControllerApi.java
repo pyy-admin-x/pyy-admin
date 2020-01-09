@@ -61,6 +61,16 @@ public interface SysRoleControllerApi {
     ResponseResult delete(@Valid @PathVariable(value = "id") String id);
 
     /**
+     * 批量删除角色
+     * @param ids
+     * @return
+     */
+    @ApiOperation(value = "批量删除角色", notes = "批量删除角色")
+    @ApiImplicitParam(name = "ids", value = "角色IDS", required = true, dataType = "List", paramType = "body")
+    @DeleteMapping("/delBatch")
+    ResponseResult deleteBatch(@RequestBody List<String> ids);
+
+    /**
      * 单个角色查询
      * @param id
      * @return

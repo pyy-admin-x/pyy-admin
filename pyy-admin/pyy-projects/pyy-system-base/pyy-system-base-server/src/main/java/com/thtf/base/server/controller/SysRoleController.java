@@ -42,6 +42,12 @@ public class SysRoleController implements SysRoleControllerApi {
     }
 
     @Override
+    public ResponseResult deleteBatch(List<String> ids) {
+        sysRoleService.deleteBatch(ids);
+        return ResponseResult.SUCCESS();
+    }
+
+    @Override
     public ResponseResult<SysRoleVO> findById(String id) {
         return ResponseResult.SUCCESS(sysRoleService.findById(id));
     }
