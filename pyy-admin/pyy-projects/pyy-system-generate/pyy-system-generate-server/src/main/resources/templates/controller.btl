@@ -1,0 +1,59 @@
+package ${table.controllerPackageName};
+
+import ${table.voPackageName}.*;
+import ${table.modelPackageName}.*;
+import ${table.servicePackageName}.${table.className}Service;
+import com.thtf.common.core.response.Pager;
+import com.thtf.common.core.response.ResponseResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * ---------------------------
+ * ${table.description} (${table.className}Controller)         
+ * ---------------------------
+ * 作者：  ${table.author}
+ * 时间：  ${strutil.formatDate(date(),'yyyy-MM-dd HH:mm:ss')}
+ * 版本：  v1.0
+ * ---------------------------
+ */
+@RestController
+public class ${table.className}Controller implements ${table.className}Controller{
+
+	@Autowired
+	private ${table.className}Service ${table.objectName}Service;
+
+    @Override
+    public ResponseResult<${table.className}VO> save(${table.className}SaveOrUpdateVO record) {
+        return ResponseResult.SUCCESS(${table.objectName}Service.save(record));
+    }
+
+    @Override
+    public ResponseResult<${table.className}VO> update(String id, ${table.className}SaveOrUpdateVO record) {
+        return ResponseResult.SUCCESS(${table.objectName}Service.update(id, record));
+    }
+
+    @Override
+    public ResponseResult delete(String id) {
+        ${table.objectName}Service.delete(id);
+        return ResponseResult.SUCCESS();
+    }
+
+    @Override
+    public ResponseResult<${table.className}VO> findById(String id) {
+        return ResponseResult.SUCCESS(${table.objectName}Service.findById(id));
+    }
+
+    @Override
+    public ResponseResult<List<${table.className}VO>> getList(${table.className}QueryConditionVO queryConditionVO) {
+        return ResponseResult.SUCCESS(${table.objectName}Service.findList(queryConditionVO));
+    }
+
+    @Override
+    public ResponseResult<Pager<${table.className}VO>> getPageList(${table.className}QueryConditionVO queryConditionVO, int page, int size) {
+        return ResponseResult.SUCCESS(${table.objectName}Service.findList(queryConditionVO, page, size));
+    }
+	
+}

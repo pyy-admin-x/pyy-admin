@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>pyy-common</artifactId>
+        <groupId>com.thtf</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>pyy-common-log</artifactId>
+    <packaging>jar</packaging>
+
+    <description>pyy-common-log 系统操作日志模块</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <mybatis-plus.version>3.2.0</mybatis-plus.version>
+        <pyy.version>1.0.0</pyy.version>
+    </properties>
+
+    <dependencies>
+        <!-- pyy-common-core -->
+        <dependency>
+            <groupId>com.thtf</groupId>
+            <artifactId>pyy-common-core</artifactId>
+            <version>${pyy.version}</version>
+        </dependency>
+        <!-- pyy-system-base-api -->
+        <dependency>
+            <groupId>com.thtf</groupId>
+            <artifactId>pyy-system-base-api</artifactId>
+            <version>${pyy.version}</version>
+        </dependency>
+        <!-- pyy-common-auth -->
+        <dependency>
+            <groupId>com.thtf</groupId>
+            <artifactId>pyy-common-auth</artifactId>
+            <version>${pyy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+        <!-- UserAgentUtils -->
+        <dependency>
+            <groupId>eu.bitwalker</groupId>
+            <artifactId>UserAgentUtils</artifactId>
+            <version>1.20</version>
+        </dependency>
+        <!-- ip2region -->
+        <dependency>
+            <groupId>org.lionsoul</groupId>
+            <artifactId>ip2region</artifactId>
+            <version>1.7.2</version>
+        </dependency>
+    </dependencies>
+
+</project>

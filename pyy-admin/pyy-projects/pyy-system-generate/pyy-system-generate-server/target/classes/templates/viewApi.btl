@@ -1,0 +1,17 @@
+import { BASE_SERVER_API_GATEWAY_URL } from '@/api/serverUrl'
+import { createAPI } from '@/utils/request'
+
+/** 注意：这里实际应用时 #号 要替换为 $ */
+export const get${table.className}ById = (id) => createAPI(`#{BASE_SERVER_API_GATEWAY_URL}/${table.objectName}/#{id}`, 'get')
+
+export const get${table.className}List = (params) => createAPI(\`#{BASE_SERVER_API_GATEWAY_URL}/${table.objectName}/list\`, 'get', params)
+
+export const get${table.className}PageList = (page, size, params) => createAPI(`#{BASE_SERVER_API_GATEWAY_URL}/${table.objectName}/page?page=#{page}&size=#{size}`, 'get', params)
+
+export const add${table.className} = (${table.objectName}) => createAPI(`#{BASE_SERVER_API_GATEWAY_URL}/${table.objectName}`, 'post', ${table.objectName})
+
+export const update${table.className} = (id, ${table.objectName}) => createAPI(`#{BASE_SERVER_API_GATEWAY_URL}/${table.objectName}/#{id}`, 'put', ${table.objectName})
+
+export const delete${table.className} = (id) => createAPI(`#{BASE_SERVER_API_GATEWAY_URL}/$ {table.objectName}/#{id}`, 'delete')
+
+export const deleteBatch${table.className} = (ids) => createAPI(`#{BASE_SERVER_API_GATEWAY_URL}/${table.objectName}/delBatch`, 'delete', ids)

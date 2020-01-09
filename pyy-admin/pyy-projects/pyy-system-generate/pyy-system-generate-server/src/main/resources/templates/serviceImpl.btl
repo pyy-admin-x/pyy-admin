@@ -1,0 +1,205 @@
+package ${table.serviceImplPackageName};
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.thtf.common.core.exception.ExceptionCast;
+import com.thtf.common.core.response.CommonCode;
+import com.thtf.common.core.response.Pager;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import ${table.modelPackageName}.*;
+import ${table.voPackageName}.*;
+import ${table.daoPackageName}.${table.className}Mapper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * ---------------------------
+ * ${table.description} (${table.className}ServiceImpl)         
+ * ---------------------------
+ * 作者：  ${table.author}
+ * 时间：  ${strutil.formatDate(date(),'yyyy-MM-dd HH:mm:ss')}
+ * 版本：  v1.0
+ * ---------------------------
+ */
+@Slf4j
+@Service
+@Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.DEFAULT,timeout=36000,rollbackFor=Exception.class)
+public class ${table.className}ServiceImpl implements ${table.className}Service {
+
+	@Autowired
+	private ${table.className}Mapper ${table.objectName}Mapper;
+
+    /**
+     * ${table.description}保存
+     * @param ${table.objectName}SaveOrUpdateVO
+     */
+	@Override
+	public ${table.className}VO save(${table.className}SaveOrUpdateVO ${table.objectName}SaveOrUpdateVO) {
+        // 初始化Model对象
+        ${table.className} ${table.objectName} = new ${table.className}();
+        // 属性赋值
+        BeanUtils.copyProperties(${table.objectName}SaveOrUpdateVO, ${table.objectName});
+        ${table.objectName}.setId(null); // 确保ID为null，默认使用mybatis-plus ID生成策略
+        // 执行保存
+        int row = ${table.objectName}Mapper.insert(${table.objectName});
+        if (row != 1) {
+            ExceptionCast.cast(ResultCode.SAVE_ERROR, "${table.description}");
+        }
+        // 转换为VO对象
+        ${table.className}VO ${table.objectName}VO = new ${table.className}VO();
+        BeanUtils.copyProperties(${table.objectName}, ${table.objectName}VO);
+        log.info("### ${table.description}保存完毕 ###");
+        // 返回保存后结果
+        return ${table.objectName}VO;
+	}
+
+    /**
+     * ${table.description}删除
+     * @param id
+     */
+    @Override
+    public void delete(${table.primaryKey.javaType} id) {
+        // 参数校验
+        if (StringUtils.isBlank(id)) {
+           ExceptionCast.cast(ResultCode.PARAM_INVALID);
+        }
+        // 根据ID查询${table.description}
+        ${table.className} ${table.objectName} = ${table.objectName}Mapper.selectById(id);
+        if (${table.objectName} == null) {
+            ExceptionCast.cast(BaseServerCode.RESULT_DATA_NONE);
+        }
+        // 执行删除
+        int row = ${table.objectName}Mapper.deleteById(id);
+        if (row != 1) {
+           ExceptionCast.cast(ResultCode.DELETE_ERROR, "${table.description}");
+        }
+        log.info("### ${table.description}删除完毕 ###");
+    }
+
+	/**
+     * ${table.description}修改
+     * @param id
+     * @param ${table.objectName}SaveOrUpdateVO
+     */
+    @Override
+    public ${table.className}VO update(${table.primaryKey.javaType} id, ${table.className}SaveOrUpdateVO ${table.objectName}SaveOrUpdateVO) {
+        // 参数校验
+        if (StringUtils.isBlank(id) || ${table.objectName}SaveOrUpdateVO == null) {
+           ExceptionCast.cast(CommonCode.INVALID_PARAM);
+        }
+        // 根据ID查询${table.description}
+        ${table.className} ${table.objectName} = ${table.objectName}Mapper.selectById(id);
+        if (${table.objectName} == null) {
+            ExceptionCast.cast(BaseServerCode.RESULT_DATA_NONE);
+        }
+
+        // 属性赋值
+        BeanUtils.copyProperties(${table.objectName}SaveOrUpdateVO, ${table.objectName});
+        ${table.objectName}.setId(id);
+        // 执行修改
+        int row = ${table.objectName}Mapper.updateById(${table.objectName});
+        if (row != 1) {
+           ExceptionCast.cast(ResultCode.DELETE_ERROR, "${table.description}");
+        }
+        // 转换为VO对象
+        ${table.className}VO ${table.objectName}VO = new ${table.className}VO();
+        BeanUtils.copyProperties(${table.objectName}, ${table.objectName}VO);
+         log.info("### ${table.description}修改完毕 ###");
+        // 返回保存后结果
+        return ${table.objectName}VO;
+    }
+
+   /**
+    * 根据${table.description}ID查询
+    * @param id
+    */
+	@Override
+	public ${table.className}VO findById(${table.primaryKey.javaType} id) {
+	    // 参数校验
+        if (StringUtils.isBlank(id)) {
+           ExceptionCast.cast(CommonCode.INVALID_PARAM);
+        }
+        // 根据ID查询${table.description}
+		${table.className} ${table.objectName} = ${table.objectName}Mapper.selectById(id);
+		if (${table.objectName} == null) {
+            return null;
+        }
+        // 转换为VO对象
+        ${table.className}VO ${table.objectName}VO = new ${table.className}VO();
+        BeanUtils.copyProperties(${table.objectName}, ${table.objectName}VO);
+        log.info("### ${table.description}查询完毕 ###");
+        // 返回保存后结果
+        return ${table.objectName}VO;
+	}
+
+   /**
+     * ${table.description}模糊查询
+     * @param queryConditionVO
+     * @return
+     */
+    @Override
+    public List<${table.className}VO> findList(${table.className}QueryConditionVO queryConditionVO) {
+        // 参数校验
+        if (queryConditionVO == null) {
+          queryConditionVO = new ${table.className}QueryConditionVO();
+        }
+        // 查询条件
+        LambdaQueryWrapper<${table.className}> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotBlank(queryConditionVO.getName()), ${table.className}::getName, queryConditionVO.getName());
+        // 执行查询
+        List<${table.className}> ${table.objectName}List = ${table.objectName}Mapper.selectList(queryWrapper);
+        log.info("### ${table.description}Model模糊查询完毕，总条数：{}条###", ${table.objectName}List.size());
+        // ${table.description}转换VO数据
+        List<${table.className}VO> ${table.objectName}VOList = new ArrayList<>();
+        ${table.objectName}List.forEach(${table.objectName} -> {
+            ${table.className}VO ${table.objectName}VO = new ${table.className}VO();
+            BeanUtils.copyProperties(${table.objectName}, ${table.objectName}VO);
+            ${table.objectName}VOList.add(${table.objectName}VO);
+        });
+        log.info("### ${table.description}转换VO数据完毕###");
+        return ${table.objectName}VOList;
+    }
+
+    /**
+     * ${table.description}分页模糊查询
+     * @param queryConditionVO
+     * @param page
+     * @param size
+     * @return
+     */
+	@Override
+    public Pager<${table.className}VO> findList(${table.className}QueryConditionVO queryConditionVO, int page, int size) {
+        // 参数校验
+        if (queryConditionVO == null) {
+          queryConditionVO = new ${table.className}QueryConditionVO();
+        }
+        // 查询条件
+        LambdaQueryWrapper<${table.className}> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotBlank(queryConditionVO.getName()), ${table.className}::getName, queryConditionVO.getName());
+        // 分页条件
+        Page<${table.className}> pageInfo = new Page(page, size);
+        // 执行查询
+        IPage<${table.className}> ${table.objectName}Page = ${table.objectName}Mapper.selectPage(pageInfo, queryWrapper);
+        long total = ${table.objectName}Page.getTotal();
+        List<${table.className}> ${table.objectName}List = ${table.objectName}Page.getRecords();
+        // ${table.description}转换VO数据
+        List<${table.className}VO> ${table.objectName}VOList = new ArrayList<>();
+        ${table.objectName}List.forEach(${table.objectName} -> {
+            ${table.className}VO ${table.objectName}VO = new ${table.className}VO();
+            BeanUtils.copyProperties(${table.objectName}, ${table.objectName}VO);
+            ${table.objectName}VOList.add(${table.objectName}VO);
+        });
+        log.info("### ${table.description}转换VO数据完毕###");
+        // 分装分页查询结果
+        return new Pager(total, ${table.objectName}VOList);
+    }
+}

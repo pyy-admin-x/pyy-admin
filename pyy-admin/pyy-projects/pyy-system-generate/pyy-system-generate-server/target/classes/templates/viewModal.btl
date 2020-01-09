@@ -1,0 +1,132 @@
+<template>
+  <el-drawer
+    :title="title"
+    :visible.sync="visible"
+    @close="resetForm"
+    :wrapperClosable="false" ref="${table.objectName}Drawer" size="30%">
+    <div class="model-content">
+      <el-form :model="${table.objectName}Form" :rules="${table.objectName}FormRules" ref="${table.objectName}Form" label-width="80px" size="small">
+  <%
+        for(column in table.columns) {
+  %>
+        <el-form-item label="${column.description}" prop="${column.fieldName}">
+           <el-input v-model="${table.objectName}Form.${column.fieldName}" auto-complete="off"/>
+        </el-form-item>
+  <%
+    }
+  %>
+      </el-form>
+      <div slot="footer" class="dialog-footer" style="text-align: right">
+        <el-button type="plain" size="small" @click="handleCancel">关闭</el-button>
+        <el-button type="primary" size="small" @click="handleSubmit">提交</el-button>
+      </div>
+    </div>
+  </el-drawer>
+</template>
+
+<script type="text/ecmascript-6">
+  // import the component
+  import Treeselect from '@riophae/vue-treeselect'
+  // import the styles
+  import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+  import * as ${table.objectName}API from '@/api/system/${table.objectName}/index'
+
+  export default {
+    name: '${table.objectName}Modal',
+    data () {
+      return {
+        title: '',
+        visible: false,
+        confirmLoading: false,
+        // 新增界面数据
+        ${table.objectName}Form: {
+          id: '',
+          name: '',
+          ${table.objectName}Id: null,
+          sort: 1,
+          remark: '',
+        },
+        // 验证规则
+        ${table.objectName}FormRules: {
+          name: [{required: true, message: '请输入名称', trigger: 'blur'}],
+        }
+      }
+    },
+    mounted () {
+    },
+    methods: {
+      // 打开添加对话框
+      openAdd () {
+        this.visible = true
+      },
+      // 打开编辑对话框
+      openEdit (id) {
+        this.visible = true
+        this.$nextTick(() => {
+          // 异步查询
+          ${table.objectName}API.get${table.className}ById(id).then(res => {
+            console.log(res)
+            const ${table.objectName} = res.data
+      <%
+         for(column in table.columns) {
+      %>
+            this.${table.objectName}Form.${column.fieldName} = ${table.objectName}.${column.fieldName}
+      <%
+        }
+      %>
+          })
+        })
+      },
+      // 重置form
+      resetForm () {
+        this.$refs.${table.objectName}Form.resetFields();
+      },
+      // 关闭Drewer对话框
+      handleCancel () {
+        this.resetForm()
+        console.log(this.$refs.${table.objectName}Drawer)
+        this.$refs.${table.objectName}Drawer.closeDrawer()
+      },
+      // 提交
+      handleSubmit () {
+        // 表单验证
+        this.$refs.${table.objectName}Form.validate(async (valid) => {
+          if (valid) {
+            if (!this.${table.objectName}Form.id) {
+              // 异步添加
+              await ${table.objectName}API.add${table.className}(this.${table.objectName}Form)
+            } else {
+              // 异步修改
+              await ${table.objectName}API.update${table.className}(this.${table.objectName}Form.id, this.${table.objectName}Form)
+            }
+            this.$notify({ title: '成功',  message: '提交',  type: 'success'});
+            // 关闭对话框
+            this.handleCancel()
+            // 刷新查询
+            this.$parent.handleQuery()
+          }
+        });
+      }
+    },
+    components: {
+      Treeselect
+    }
+  }
+</script>
+
+<style lang="scss" rel="stylesheet/scss">
+  .model-content {
+    margin: 24px;
+    padding: 15px;
+    border: 1px solid rgb(233, 233, 233);
+  }
+
+  .el-drawer__header {
+    padding: 16px 24px;
+    border-radius: 4px 4px 0 0;
+    background: #fff;
+    color: rgba(0, 0, 0, .65);
+    border-bottom: 1px solid #e8e8e8;
+    margin-bottom: 0px;
+  }
+</style>

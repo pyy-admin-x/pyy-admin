@@ -1,0 +1,16 @@
+package ${table.daoPackageName};
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import ${table.modelPackageName}.*;
+
+/**
+ * ---------------------------
+ * ${table.description} (${table.className}Mapper)         
+ * ---------------------------
+ * 作者：  ${table.author}
+ * 时间：  ${strutil.formatDate(date(),'yyyy-MM-dd HH:mm:ss')}
+ * 版本：  v1.0
+ * ---------------------------
+ */
+public interface ${table.className}Mapper extends BaseMapper<${table.className}>{
+}

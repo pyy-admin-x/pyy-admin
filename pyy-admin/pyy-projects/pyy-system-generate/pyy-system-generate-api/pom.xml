@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>pyy-system-generate</artifactId>
+        <groupId>com.thtf</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>pyy-system-generate-api</artifactId>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <mybatis-plus.version>3.2.0</mybatis-plus.version>
+        <pyy.version>1.0.0</pyy.version>
+    </properties>
+
+    <dependencies>
+        <!-- pyy-common-core -->
+        <dependency>
+            <groupId>com.thtf</groupId>
+            <artifactId>pyy-common-core</artifactId>
+            <version>${pyy.version}</version>
+        </dependency>
+        <!-- pyy-common-data -->
+        <dependency>
+            <groupId>com.thtf</groupId>
+            <artifactId>pyy-common-data</artifactId>
+            <version>${pyy.version}</version>
+        </dependency>
+        <!-- pyy-common-swagger -->
+        <dependency>
+            <groupId>com.thtf</groupId>
+            <artifactId>pyy-common-swagger</artifactId>
+            <version>${pyy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-annotation</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+    </dependencies>
+</project>

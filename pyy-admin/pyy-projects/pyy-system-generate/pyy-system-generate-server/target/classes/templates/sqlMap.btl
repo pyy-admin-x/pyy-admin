@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${table.daoPackageName}.${table.className}Mapper">
+
+  <resultMap id="BaseResultMap" type="${table.modelPackageName}.${table.className}">
+<%
+	for(column in table.columns) {
+		if(column.isPrimaryKey) {
+%>	
+	<id column="${column.name}" jdbcType="${column.jdbcType}" property="${column.fieldName}" />
+<%
+		} else {
+%>
+	<result column="${column.name}" jdbcType="${column.jdbcType}" property="${column.fieldName}" />
+<%
+		}
+	}
+%>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    <%
+    	for(column in table.columns) {
+            if (columnLP.last) {
+    %>
+      a.${column.name}
+    <%
+            } else {
+    %>
+      a.${column.name},
+    <%
+            }
+    	}
+    %>
+  </sql>
+
+</mapper>

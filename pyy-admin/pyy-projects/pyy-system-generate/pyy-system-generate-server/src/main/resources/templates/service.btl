@@ -1,0 +1,59 @@
+package ${table.servicePackageName};
+
+import ${table.voPackageName}.*;
+import com.thtf.common.core.response.Pager;
+
+import java.util.List;
+
+/**
+ * ---------------------------
+ * ${table.description} (${table.className}Service)         
+ * ---------------------------
+ * 作者：  ${table.author}
+ * 时间：  ${strutil.formatDate(date(),'yyyy-MM-dd HH:mm:ss')}
+ * 版本：  v1.0
+ * ---------------------------
+ */
+public interface ${table.className}Service {
+
+    /**
+     * ${table.description}保存
+     * @param ${table.objectName}SaveOrUpdateVO
+     */
+    ${table.className}VO save(${table.className}SaveOrUpdateVO ${table.objectName}SaveOrUpdateVO);
+
+	/**
+     * ${table.description}修改
+     * @param id
+     * @param ${table.objectName}SaveOrUpdateVO
+     */
+    ${table.className}VO update(${table.primaryKey.javaType} id, ${table.className}SaveOrUpdateVO ${table.objectName}SaveOrUpdateVO);
+
+    /**
+     * ${table.description}删除
+     * @param id
+     */
+	void delete(${table.primaryKey.javaType} id);
+
+    /**
+     * 根据${table.description}ID查询
+     * @param id
+     */
+	${table.className}VO findById(${table.primaryKey.javaType} id);
+
+    /**
+     * ${table.description}模糊查询
+     * @param queryConditionVO
+     * @return
+     */
+    List<${table.className}VO> findList(${table.className}QueryConditionVO queryConditionVO);
+
+    /**
+     * ${table.description}分页模糊查询
+     * @param queryConditionVO
+     * @param page
+     * @param size
+     * @return
+     */
+    Pager<${table.className}VO> findList(${table.className}QueryConditionVO queryConditionVO, int page, int size);
+}
