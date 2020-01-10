@@ -4,7 +4,6 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.URLUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import com.thtf.base.api.vo.SysLogSaveOrUpdateVO;
-import com.thtf.common.auth.utils.UserSecurityUtil;
 import com.thtf.common.core.constant.PyyConstant;
 import com.thtf.common.core.response.ResponseResult;
 import com.thtf.common.log.event.SysLogEvent;
@@ -78,7 +77,8 @@ public class SysLogAspect {
         // 开始时间
         long beginTime = Instant.now().toEpochMilli();
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        sysLog.setUsername(UserSecurityUtil.getUsername());
+        sysLog.setUserId("");
+        sysLog.setUsername("");
         sysLog.setActionUrl(URLUtil.getPath(request.getRequestURI()));
         sysLog.setStartTime(new Date());
         String requestIp = ServletUtil.getClientIP(request);

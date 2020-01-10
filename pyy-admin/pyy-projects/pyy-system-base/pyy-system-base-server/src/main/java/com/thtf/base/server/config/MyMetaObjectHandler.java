@@ -1,27 +1,34 @@
 package com.thtf.base.server.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
-import com.thtf.common.auth.utils.UserSecurityUtil;
+import com.thtf.common.auth.token.properties.TokenProperties;
+import com.thtf.common.auth.utils.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 /**
  * 自动填充配置
  */
+@Slf4j
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MyMetaObjectHandler.class);
 
     private String userId;
     private String username;
 
     public MyMetaObjectHandler() {
-        this.userId = UserSecurityUtil.getUserId();
-        this.username = UserSecurityUtil.getUsername();
+        this.userId = "";
+        this.username = "";
+        log.info("### 当前操用户：userId={}, username={} ###", userId, username);
     }
 
     @Override

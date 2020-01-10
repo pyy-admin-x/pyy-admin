@@ -1,13 +1,11 @@
 package com.thtf.generate.server.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
-import com.thtf.common.auth.utils.UserSecurityUtil;
 import org.apache.ibatis.reflection.MetaObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 /**

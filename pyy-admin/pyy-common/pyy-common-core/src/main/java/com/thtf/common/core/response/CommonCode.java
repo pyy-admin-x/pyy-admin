@@ -14,9 +14,16 @@ public enum CommonCode implements ResponseCode{
     FAIL(500,"未知异常，请联系管理员！"),
     UNAUTHENTICATED(10001,"此操作需要登陆系统！"),
     UNAUTHORISE(10002,"权限不足，无权操作！"),
+    TOKEN_EXPIRED(10003, "token失效"),
+    TOKEN_INVALID(10004, "token无效"),
+    PERMISSION_SIGNATURE_ERROR(10005, "JWT签名失败"),
+
+
     INVALID_PARAM(10003,"非法参数！"),
     INVALID_REQUEST_METHOD( 10004, "请求方式错误！"),
-    SERVER_ERROR(99999,"抱歉，系统繁忙，请稍后重试！");;
+
+
+    SERVER_ERROR(99999,"抱歉，系统繁忙，请稍后重试！");
 
     //操作代码
     private int code;

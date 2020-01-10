@@ -29,6 +29,12 @@ spring:
             - Path=/v1/generate-server/**
           filters:
           - StripPrefix=2 # 从第几级开始转发，数字从0开始
+
+auth:
+  # 跳过认证的路由（白名单）
+  skip-auth-urls:
+  - /login
+
 # actuator相关配置
 management:
   endpoints:

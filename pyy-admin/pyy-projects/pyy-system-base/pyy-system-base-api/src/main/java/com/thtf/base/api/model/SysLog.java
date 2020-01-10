@@ -1,8 +1,6 @@
 package com.thtf.base.api.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -45,11 +43,15 @@ public class SysLog implements Serializable {
     /**
      * 操作人ID
      */
+    /** 创建时间 */
+    @TableField(fill = FieldFill.INSERT)
     private String userId;
 
     /**
      * 操作人ID
      */
+    /** 创建时间 */
+    @TableField(fill = FieldFill.INSERT)
     private String username;
 
     /**
