@@ -2,7 +2,7 @@
   <div class="container">
 	<!--工具栏-->
 	<div class="toolbar" >
-		<el-form :inline="true" :model="params" >
+		<el-form :inline="true" :model="params" size="small">
 			<el-form-item>
 				<el-input v-model="params.name" placeholder="名称"></el-input>
 			</el-form-item>
