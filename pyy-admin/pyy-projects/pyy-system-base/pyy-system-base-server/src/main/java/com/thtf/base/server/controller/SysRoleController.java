@@ -5,6 +5,7 @@ import com.thtf.base.api.vo.*;
 import com.thtf.base.server.service.SysRoleService;
 import com.thtf.common.core.response.Pager;
 import com.thtf.common.core.response.ResponseResult;
+import com.thtf.common.log.annotation.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,22 +27,26 @@ public class SysRoleController implements SysRoleControllerApi {
 	private SysRoleService sysRoleService;
 
     @Override
+    @Log(desc = "添加角色")
     public ResponseResult<SysRoleVO> save(SysRoleSaveOrUpdateVO record) {
         return ResponseResult.SUCCESS(sysRoleService.save(record));
     }
 
     @Override
+    @Log(desc = "修改角色")
     public ResponseResult<SysRoleVO> update(String id, SysRoleSaveOrUpdateVO record) {
         return ResponseResult.SUCCESS(sysRoleService.update(id, record));
     }
 
     @Override
+    @Log(desc = "删除角色")
     public ResponseResult delete(String id) {
         sysRoleService.delete(id);
         return ResponseResult.SUCCESS();
     }
 
     @Override
+    @Log(desc = "批量删除角色")
     public ResponseResult deleteBatch(List<String> ids) {
         sysRoleService.deleteBatch(ids);
         return ResponseResult.SUCCESS();
