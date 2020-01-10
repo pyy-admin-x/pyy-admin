@@ -61,6 +61,16 @@ public interface ${table.className}ControllerApi {
     ResponseResult delete(@Valid @PathVariable(value = "id") String id);
 
     /**
+     * 批量删除${table.description}
+     * @param ids
+     * @return
+     */
+	@ApiOperation(value = "删除${table.description}", notes = "根据ID${table.description}")
+    @ApiImplicitParam(name = "ids", value = "${table.description}IDS", required = true, dataType = "List", paramType = "body")
+    @DeleteMapping("/delBatch")
+    ResponseResult deleteBatch(@RequestBody List<String> ids);
+
+    /**
      * 单个${table.description}查询
      * @param id
      * @return

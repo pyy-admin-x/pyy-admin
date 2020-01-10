@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * ---------------------------
  * 角色 (SysRole)         
@@ -25,4 +27,6 @@ public class SysRoleSaveOrUpdateVO {
 	private Integer sort;
 	@ApiModelProperty("备注")
 	private String remark;
+	@ApiModelProperty("权限ID集合")
+	private List<String> menuIds;
 }

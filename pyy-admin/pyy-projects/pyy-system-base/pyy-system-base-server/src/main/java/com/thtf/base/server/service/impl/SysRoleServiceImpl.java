@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.thtf.base.server.enums.BaseServerCode;
 import com.thtf.base.server.mapper.SysRoleMapper;
+import com.thtf.base.server.mapper.SysRoleMenuMapper;
 import com.thtf.base.server.service.SysRoleService;
 import com.thtf.common.core.exception.ExceptionCast;
 import com.thtf.common.core.response.CommonCode;
@@ -23,6 +24,7 @@ import com.thtf.base.api.vo.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * ---------------------------
@@ -41,6 +43,9 @@ public class SysRoleServiceImpl implements SysRoleService {
 	@Autowired
 	private SysRoleMapper sysRoleMapper;
 
+	@Autowired
+    private SysRoleMenuMapper sysRoleMenuMapper;
+
     /**
      * 角色保存
      * @param sysRoleSaveOrUpdateVO
@@ -57,6 +62,10 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (row != 1) {
             ExceptionCast.cast(BaseServerCode.SAVE_ERROR);
         }
+        log.info("### 角色表数据添加完毕 ###");
+        // 取出角色关联菜单IDS
+        List<String> menuIds = sysRoleSaveOrUpdateVO.getMenuIds();
+        addRoleMenus(sysRole.getId(), menuIds);
         // 转换为VO对象
         SysRoleVO sysRoleVO = new SysRoleVO();
         BeanUtils.copyProperties(sysRole, sysRoleVO);
@@ -80,12 +89,18 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (sysRole == null) {
             ExceptionCast.cast(BaseServerCode.RESULT_DATA_NONE);
         }
+        // 删除角色关联权限信息
+        LambdaQueryWrapper<SysRoleMenu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysRoleMenu::getRoleId, id);
+        sysRoleMenuMapper.delete(queryWrapper);
+        log.info("### 角色关联权限删除完毕 ###");
         // 执行删除
         int row = sysRoleMapper.deleteById(id);
         if (row != 1) {
            ExceptionCast.cast(BaseServerCode.DELETE_ERROR);
         }
         log.info("### 角色删除完毕 ###");
+
     }
 
     @Override
@@ -94,6 +109,14 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (CollUtil.isEmpty(ids)) {
             ExceptionCast.cast(BaseServerCode.DEL_IDS_ISEMPTY);
         }
+        // 删除角色关联权限信息
+        for (String roleId : ids) {
+            LambdaQueryWrapper<SysRoleMenu> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(SysRoleMenu::getRoleId, roleId);
+            sysRoleMenuMapper.delete(queryWrapper);
+        }
+        log.info("### 角色关联权限删除完毕 ###");
+        // 批量删除角色
         int rows = sysRoleMapper.deleteBatchIds(ids);
         if (rows < 1) {
             ExceptionCast.cast(BaseServerCode.DELETE_ERROR);
@@ -116,7 +139,13 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (sysRole == null) {
             ExceptionCast.cast(BaseServerCode.RESULT_DATA_NONE);
         }
-
+        // 删除角色关联权限信息
+        LambdaQueryWrapper<SysRoleMenu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysRoleMenu::getRoleId, id);
+        sysRoleMenuMapper.delete(queryWrapper);
+        log.info("### 角色关联权限删除完毕 ###");
+        // 重新添加新的关联关系
+        addRoleMenus(id, sysRoleSaveOrUpdateVO.getMenuIds());
         // 属性赋值
         BeanUtils.copyProperties(sysRoleSaveOrUpdateVO, sysRole);
         sysRole.setId(id);
@@ -148,9 +177,17 @@ public class SysRoleServiceImpl implements SysRoleService {
 		if (sysRole == null) {
             return null;
         }
+		// 获取角色关联菜单ID集合
+        LambdaQueryWrapper<SysRoleMenu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysRoleMenu::getRoleId, id);
+        List<SysRoleMenu> sysRoleMenus = sysRoleMenuMapper.selectList(queryWrapper);
+        List<String> menuIds = sysRoleMenus.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
+        log.info("### 角色关联权限ID集合：{} ###", menuIds);
+
         // 转换为VO对象
         SysRoleVO sysRoleVO = new SysRoleVO();
         BeanUtils.copyProperties(sysRole, sysRoleVO);
+        sysRoleVO.setMenuIds(menuIds);
         log.info("### 角色查询完毕 ###");
         // 返回保存后结果
         return sysRoleVO;
@@ -216,5 +253,19 @@ public class SysRoleServiceImpl implements SysRoleService {
         log.info("### 角色转换VO数据完毕###");
         // 分装分页查询结果
         return new Pager(total, sysRoleVOList);
+    }
+
+    // 添加角色权限关联关系
+    private void addRoleMenus(String roleId, List<String> menuIds) {
+        if (CollUtil.isNotEmpty(menuIds)) {
+            for (String menuId : menuIds) {
+                SysRoleMenu sysRoleMenu = new SysRoleMenu();
+                sysRoleMenu.setId(null);
+                sysRoleMenu.setRoleId(roleId);
+                sysRoleMenu.setMenuId(menuId);
+                sysRoleMenuMapper.insert(sysRoleMenu);
+            }
+            log.info("### 角色角色关联菜单数据添加完毕 ###");
+        }
     }
 }

@@ -36,6 +36,12 @@ public interface ${table.className}Service {
 	void delete(${table.primaryKey.javaType} id);
 
     /**
+     * 批量删除${table.description}
+     * @param ids
+     */
+    void deleteBatch(List<String> ids);
+
+    /**
      * 根据${table.description}ID查询
      * @param id
      */

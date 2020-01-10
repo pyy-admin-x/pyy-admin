@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * ---------------------------
  * 角色 (SysRole)         
@@ -39,4 +41,6 @@ public class SysRoleVO {
     private String updateName;
 	@ApiModelProperty("修改时间")
     private java.util.Date updateTime;
+    @ApiModelProperty("角色关联菜单ID集合")
+	private List<String> menuIds;
 }
