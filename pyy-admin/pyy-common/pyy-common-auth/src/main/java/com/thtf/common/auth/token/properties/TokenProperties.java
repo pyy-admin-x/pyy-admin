@@ -20,10 +20,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class TokenProperties {
     /** token key */
-    public String tokenKey = "Authorization";
+    private String tokenKey = "Authorization";
 
     /** token value 前缀 */
-    public String tokenPrefix = "Bearer ";
+    private String tokenPrefix = "Bearer ";
 
     /** 代表这个JWT的签发主体 */
     private String clientId;
