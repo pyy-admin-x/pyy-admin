@@ -14,7 +14,7 @@ public enum CommonCode implements ResponseCode{
     FAIL(500,"未知异常，请联系管理员！"),
     UNAUTHENTICATED(10001,"此操作需要登陆系统！"),
     UNAUTHORISE(10002,"权限不足，无权操作！"),
-    TOKEN_EXPIRED(10003, "token失效"),
+    TOKEN_EXPIRED(10003, "token过期"),
     TOKEN_INVALID(10004, "token无效"),
     PERMISSION_SIGNATURE_ERROR(10005, "JWT签名失败"),
 

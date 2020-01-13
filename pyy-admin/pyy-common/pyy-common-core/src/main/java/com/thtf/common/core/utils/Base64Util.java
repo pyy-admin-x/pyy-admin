@@ -1,4 +1,4 @@
-package com.thtf.common.auth.utils;
+package com.thtf.common.core.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;

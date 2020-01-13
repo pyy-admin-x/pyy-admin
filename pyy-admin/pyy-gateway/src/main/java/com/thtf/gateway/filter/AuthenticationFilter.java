@@ -1,10 +1,12 @@
 package com.thtf.gateway.filter;
 
 import com.alibaba.fastjson.JSON;
-import com.thtf.common.auth.token.properties.TokenProperties;
-import com.thtf.common.auth.utils.JwtUtil;
+import com.thtf.common.core.properties.JwtProperties;
+import com.thtf.common.core.utils.JwtUtil;
 import com.thtf.common.core.response.CommonCode;
 import com.thtf.common.core.response.ResponseResult;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +19,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -24,9 +27,12 @@ import reactor.core.publisher.Mono;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_PREDICATE_ROUTE_ATTR;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
+
 /**
  * ---------------------------
- * 权限过滤器
+ * 认证过滤器
  * ---------------------------
  * 作者：  pyy
  * 时间：  2020/1/10 15:22
@@ -36,10 +42,10 @@ import java.util.Arrays;
 @Slf4j
 @Data
 @ConfigurationProperties("auth")
-//@Component
-public class AuthorizeFilter implements GlobalFilter, Ordered {
+@Component
+public class AuthenticationFilter implements GlobalFilter, Ordered {
     @Autowired
-    private TokenProperties tokenProperties;
+    private JwtProperties jwtProperties;
 
     /** 白名单路径 */
     private String[] skipAuthUrls;
@@ -48,16 +54,17 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
-
-        String TOKEN_KEY = tokenProperties.getTokenKey();
+        String TOKEN_KEY = jwtProperties.getTokenKey();
 
         // 获取请求路径
         String url = request.getURI().getPath();
+        log.info("### 当前请求路径 url={} ###", url);
+
         // 跳过不需要验证的路径
         if(null != skipAuthUrls && Arrays.asList(skipAuthUrls).contains(url)){
+            log.info("### 当前请求路径,为白名单,直接放行 ###");
             return chain.filter(exchange);
         }
-
         // 获取用户令牌信息
         // 1.头文件header中获取令牌
         String token = request.getHeaders().getFirst(TOKEN_KEY);
@@ -85,19 +92,29 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
         }
 
         // 没有token获取不是以Beraer开头
-        if (StringUtils.isBlank(token) || !token.startsWith(tokenProperties.getTokenPrefix())) {
+        if (StringUtils.isBlank(token) || !token.startsWith(jwtProperties.getTokenPrefix())) {
             log.info("### 用户未登录，请先登录 ###");
-            return authErro(response, CommonCode.UNAUTHENTICATED);
+            return authError(response, CommonCode.UNAUTHENTICATED);
         } else {
             // 有token, 截取有效token
             token = token.substring(7);
-            // 验证token是否有效--无效已做异常抛出，由全局异常处理后返回对应信息
-            JwtUtil.parseToken(token, tokenProperties.getBase64Secret());
 
-            // 将令牌封装到header中
-            request.mutate().header(TOKEN_KEY, new String[]{token});
-            // 通过就放行
-            return chain.filter(exchange);
+
+            //有token
+            try {
+                // 验证token是否有效--无效已做异常抛出，由全局异常处理后返回对应信息
+                Claims claims = JwtUtil.parseToken(token, jwtProperties.getBase64Secret());
+                // 将令牌封装到header中
+                request.mutate().header(TOKEN_KEY, new String[]{token});
+                // 通过就放行
+                return chain.filter(exchange);
+            }catch (ExpiredJwtException e){
+                log.error("### token过期 ###");
+                return authError(response,CommonCode.TOKEN_EXPIRED);
+            }catch (Exception e) {
+                log.error("### token无效 ###");
+                return authError(response,CommonCode.TOKEN_INVALID);
+            }
         }
     }
 
@@ -112,7 +129,7 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
      * @param commonCode 错误
      * @return
      */
-    private Mono<Void> authErro(ServerHttpResponse resp, CommonCode commonCode) {
+    private Mono<Void> authError(ServerHttpResponse resp, CommonCode commonCode) {
         resp.getHeaders().add("Content-Type","application/json;charset=UTF-8");
         ResponseResult responseResult = new ResponseResult(commonCode);
         String returnStr = JSON.toJSONString(responseResult);

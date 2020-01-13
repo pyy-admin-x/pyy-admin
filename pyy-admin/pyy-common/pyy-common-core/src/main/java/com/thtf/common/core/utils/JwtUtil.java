@@ -1,11 +1,13 @@
-package com.thtf.common.auth.utils;
+package com.thtf.common.core.utils;
 
-import com.thtf.common.auth.token.properties.TokenProperties;
-import com.thtf.common.core.exception.ExceptionCast;
-import com.thtf.common.core.response.CommonCode;
+
+import com.thtf.common.core.model.LoginUser;
+import com.thtf.common.core.properties.JwtProperties;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import javax.annotation.PostConstruct;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
@@ -22,16 +24,29 @@ import java.util.Map;
  * ---------------------------
  */
 @Slf4j
+@Component
 public class JwtUtil {
+
+    @Autowired
+    private JwtProperties jwtProperties;
+
+    @Autowired
+    private static JwtUtil jwtUtil;
+
+    @PostConstruct
+    public void init() {
+        jwtUtil = this;
+        jwtUtil.jwtProperties = this.jwtProperties;
+    }
+
     /**
      * 创建JWT
      * @param userId
      * @param username
      * @param extAttribute
-     * @param tokenProperties
      * @return
      */
-    public static String createToken(String userId, String username, Map<String, Object> extAttribute, TokenProperties tokenProperties) {
+    public static String createToken(String userId, String username, Map<String, Object> extAttribute) {
         try {
             // 使用HS256加密算法
             SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
@@ -40,7 +55,7 @@ public class JwtUtil {
             Date now = new Date(nowMillis);
 
             //生成签名密钥
-            byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(tokenProperties.getBase64Secret());
+            byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(jwtUtil.jwtProperties.getBase64Secret());
             Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
 
             //userId是重要信息，进行加密下
@@ -48,11 +63,11 @@ public class JwtUtil {
 
             //添加构成JWT的参数
             JwtBuilder builder = Jwts.builder().setHeaderParam("typ", "JWT")
-                    .claim("userId", encryUserId)
+                    .setId(encryUserId)
                     .setSubject(username) // 代表这个JWT的主体，即它的所有人了
-                    .setIssuer(tokenProperties.getClientId()) // 代表这个JWT的签发者
+                    .setIssuer(jwtUtil.jwtProperties.getClientId()) // 代表这个JWT的签发者
                     .setIssuedAt(new Date()) // 是一个时间戳，代表这个JWT的签发时间
-                    .setAudience(tokenProperties.getName()) // 代表这个JWT的接收对象
+                    .setAudience(jwtUtil.jwtProperties.getName()) // 代表这个JWT的接收对象
                     .signWith(signatureAlgorithm, signingKey);
             //添加JWT扩展属性
             for (Map.Entry<String, Object> entry : extAttribute.entrySet()) {
@@ -60,7 +75,7 @@ public class JwtUtil {
             }
 
             //添加Token过期时间
-            int TTLMillis = tokenProperties.getExpiresSecond();
+            int TTLMillis = jwtUtil.jwtProperties.getExpiresSecond();
             if (TTLMillis >= 0) {
                 long expMillis = nowMillis + TTLMillis;
                 Date exp = new Date(expMillis);
@@ -71,8 +86,8 @@ public class JwtUtil {
             //生成JWT
             return builder.compact();
         } catch (Exception e) {
-            log.error("签名失败", e);
-            ExceptionCast.cast(CommonCode.PERMISSION_SIGNATURE_ERROR);
+            log.error("### jwt签名失败:{} ###", e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -91,32 +106,38 @@ public class JwtUtil {
             return claims;
         } catch (ExpiredJwtException eje) {
             log.info("===== Token过期 =====");
-            ExceptionCast.cast(CommonCode.TOKEN_EXPIRED);
         } catch (Exception e){
             log.info("===== token解析异常 =====");
-            ExceptionCast.cast(CommonCode.TOKEN_INVALID);
+            e.printStackTrace();
         }
         return null;
     }
 
     /**
-     * 从token中获取用户名
-     * @param token
-     * @param base64Security
+     * 从token中获取用户
      * @return
      */
-    public static String getUsername(String token, String base64Security){
-        return parseToken(token, base64Security).getSubject();
+    public static LoginUser getLoginUser(Claims claims){
+        String userId = getUserId(claims);
+        String username = getUsername(claims);
+        LoginUser loginUser = new LoginUser(userId, username);
+        return loginUser;
+    }
+
+    /**
+     * 从token中获取用户名
+     * @return
+     */
+    public static String getUsername(Claims claims){
+        return claims.getSubject();
     }
 
     /**
      * 从token中获取用户ID
-     * @param token
-     * @param base64Security
      * @return
      */
-    public static String getUserId(String token, String base64Security){
-        String userId = parseToken(token, base64Security).get("userId", String.class);
+    public static String getUserId(Claims claims){
+        String userId = claims.get("userId", String.class);
         return Base64Util.decode(userId);
     }
 

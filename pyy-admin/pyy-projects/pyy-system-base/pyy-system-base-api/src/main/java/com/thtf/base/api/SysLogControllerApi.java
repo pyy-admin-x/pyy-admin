@@ -21,12 +21,11 @@ import org.springframework.web.bind.annotation.*;
  * ---------------------------
  */
 @Api(tags="操作日志管理")
-@RequestMapping("/sysLog")
 public interface SysLogControllerApi {
 
     @ApiOperation("根据ID查询日志详情")
     @ApiImplicitParam(name = "logId", value = "日志ID", required = true, dataType = "String", paramType = "path")
-    @GetMapping("/{logId}")
+    @GetMapping("/sysLog/{logId}")
     ResponseResult<SysLogVO> findById(@PathVariable("logId") String logId);
 
     @ApiOperation("分页查询日志列表")
@@ -34,15 +33,15 @@ public interface SysLogControllerApi {
             @ApiImplicitParam(name="page",value = "页码", required=true, paramType="query", dataType="int"),
             @ApiImplicitParam(name="size",value = "每页记录数", required=true, paramType="query", dataType="int")
     })
-    @GetMapping("/page")
+    @GetMapping("/sysLog/page")
     ResponseResult<Pager<SysLogVO>> findList(@RequestParam("page")int page, @RequestParam("size")int size, SysLogQueryConditionVO queryConditionVO);
 
     @ApiOperation("保存日志信息")
-    @PostMapping
+    @PostMapping("/sysLog")
     ResponseResult<SysLogVO> add(@RequestBody SysLogSaveOrUpdateVO sysLogSaveOrUpdateVO);
 
     @ApiOperation("根据id删除日志")
     @ApiImplicitParam(name = "logId", value = "日志ID", required = true, dataType = "String", paramType = "path")
-    @DeleteMapping("/{logId}")
+    @DeleteMapping("/sysLog/{logId}")
     ResponseResult delete(@PathVariable("logId") String logId);
 }

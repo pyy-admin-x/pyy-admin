@@ -1,6 +1,5 @@
 package com.thtf.gateway.controller;
 
-import com.thtf.common.auth.utils.JwtUtil;
 import com.thtf.common.core.response.ResponseResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

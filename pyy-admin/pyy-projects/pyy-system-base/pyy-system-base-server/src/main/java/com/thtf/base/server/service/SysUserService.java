@@ -3,6 +3,7 @@ package com.thtf.base.server.service;
 import com.thtf.base.api.vo.SysUserQueryConditionVO;
 import com.thtf.base.api.vo.SysUserSaveOrUpdateVO;
 import com.thtf.base.api.vo.SysUserVO;
+import com.thtf.base.api.vo.ValidateImgVO;
 import com.thtf.common.core.response.Pager;
 
 import java.util.List;
@@ -64,4 +65,11 @@ public interface SysUserService {
      * @return
      */
     Pager<SysUserVO> findList(SysUserQueryConditionVO queryConditionVO, int page, int size);
+
+    /**
+     * 获取图片验证码
+     * @param type
+     * @return
+     */
+    ValidateImgVO getImgCode(String type);
 }

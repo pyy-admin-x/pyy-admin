@@ -23,7 +23,6 @@ import java.util.List;
  * ---------------------------
  */
 @Api(tags="部门管理")
-@RequestMapping(value = "/sysDept", produces = MediaType.APPLICATION_JSON_UTF8_VALUE )
 public interface SysDeptControllerApi {
     /**
      * 保存部门
@@ -32,7 +31,7 @@ public interface SysDeptControllerApi {
      */
     @ApiOperation(value = "保存部门", notes = "创建新部门")
     @ApiImplicitParam(name = "record", value = "部门对象", required = true, dataType = "SysDeptSaveOrUpdateVO", paramType = "body")
-    @PostMapping
+    @PostMapping("/sysDept")
     ResponseResult<SysDeptTreeVO> save(@Valid @RequestBody SysDeptSaveOrUpdateVO record);
 
     /**
@@ -46,7 +45,7 @@ public interface SysDeptControllerApi {
             @ApiImplicitParam(name = "id", value = "部门ID", required = true, dataType = "String", paramType = "path"),
             @ApiImplicitParam(name = "record", value = "部门对象", required = true, dataType = "SysDeptSaveOrUpdateVO", paramType = "body")
     })
-    @PutMapping("/{id}")
+    @PutMapping("/sysDept/{id}")
     ResponseResult<SysDeptTreeVO> update(@Valid @PathVariable(value = "id") String id, @RequestBody SysDeptSaveOrUpdateVO record);
 
     /**
@@ -56,7 +55,7 @@ public interface SysDeptControllerApi {
      */
     @ApiOperation(value = "删除部门", notes = "根据ID部门")
     @ApiImplicitParam(name = "id", value = "部门ID", required = true, dataType = "String", paramType = "path")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/sysDept/{id}")
     ResponseResult delete(@Valid @PathVariable(value = "id") String id);
 
     /**
@@ -66,7 +65,7 @@ public interface SysDeptControllerApi {
      */
     @ApiOperation(value = "部门查询", notes = "根据ID部门查询")
     @ApiImplicitParam(name = "id", value = "部门ID", required = true, dataType = "String", paramType = "path")
-    @GetMapping("/{id}")
+    @GetMapping("/sysDept/{id}")
     ResponseResult<SysDeptTreeVO> findById(@Valid @PathVariable("id") String id);
 
     /**
@@ -74,6 +73,6 @@ public interface SysDeptControllerApi {
      * @return
      */
     @ApiOperation(value = "部门树列表查询", notes = "部门树列表查询")
-    @GetMapping("/treeList")
+    @GetMapping("/sysDept/treeList")
     ResponseResult<List<SysDeptTreeVO>> getTreeList();
 }

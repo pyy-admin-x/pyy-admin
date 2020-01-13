@@ -2,12 +2,12 @@
   <div class="container">
 	<!--工具栏-->
 	<div class="toolbar" >
-		<el-form :inline="true" :model="params" :size="size">
+		<el-form :inline="true" :model="params" size="small">
 			<el-form-item>
 				<el-input v-model="params.name" placeholder="名称"></el-input>
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary" size="small" icon="el-icon-search" @click="handleQuery()">查询</el-button
+				<el-button type="primary" size="small" icon="el-icon-search" @click="handleQuery()">查询</el-button>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" size="small" icon="el-icon-plus" @click.prevent="handleAdd" >新增</el-button>

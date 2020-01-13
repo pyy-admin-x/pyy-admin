@@ -23,7 +23,6 @@ import java.util.List;
  * ---------------------------
  */
 @Api(tags = "角色管理模块")
-@RequestMapping(value = "/sysRole", produces = MediaType.APPLICATION_JSON_UTF8_VALUE )
 public interface SysRoleControllerApi {
 
     /**
@@ -33,7 +32,7 @@ public interface SysRoleControllerApi {
      */
     @ApiOperation(value = "保存角色", notes = "创建新角色")
     @ApiImplicitParam(name = "record", value = "角色对象", required = true, dataType = "SysRoleSaveOrUpdateVO", paramType = "body")
-    @PostMapping
+    @PostMapping("/sysRole")
     ResponseResult<SysRoleVO> save(@Valid @RequestBody SysRoleSaveOrUpdateVO record);
 
     /**
@@ -47,7 +46,7 @@ public interface SysRoleControllerApi {
             @ApiImplicitParam(name = "id", value = "角色ID", required = true, dataType = "String", paramType = "path"),
             @ApiImplicitParam(name = "record", value = "角色对象", required = true, dataType = "SysRoleSaveOrUpdateVO", paramType = "body")
     })
-    @PutMapping("/{id}")
+    @PutMapping("/sysRole/{id}")
     ResponseResult<SysRoleVO> update(@Valid @PathVariable(value = "id") String id, @RequestBody SysRoleSaveOrUpdateVO record);
 
     /**
@@ -57,7 +56,7 @@ public interface SysRoleControllerApi {
      */
 	@ApiOperation(value = "删除角色", notes = "根据ID角色")
     @ApiImplicitParam(name = "id", value = "角色ID", required = true, dataType = "String", paramType = "path")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/sysRole/{id}")
     ResponseResult delete(@Valid @PathVariable(value = "id") String id);
 
     /**
@@ -67,7 +66,7 @@ public interface SysRoleControllerApi {
      */
     @ApiOperation(value = "批量删除角色", notes = "批量删除角色")
     @ApiImplicitParam(name = "ids", value = "角色IDS", required = true, dataType = "List", paramType = "body")
-    @DeleteMapping("/delBatch")
+    @DeleteMapping("/sysRole/delBatch")
     ResponseResult deleteBatch(@RequestBody List<String> ids);
 
     /**
@@ -77,7 +76,7 @@ public interface SysRoleControllerApi {
      */
     @ApiOperation(value = "角色查询", notes = "根据ID角色查询")
     @ApiImplicitParam(name = "id", value = "角色ID", required = true, dataType = "String", paramType = "path")
-    @GetMapping("/{id}")
+    @GetMapping("/sysRole/{id}")
     ResponseResult<SysRoleVO> findById(@Valid @PathVariable("id") String id);
 
     /**
@@ -86,7 +85,7 @@ public interface SysRoleControllerApi {
      * @return
      */
     @ApiOperation(value = "角色模糊查询", notes = "角色不带分页模糊查询")
-    @GetMapping("/list")
+    @GetMapping("/sysRole/list")
     ResponseResult<List<SysRoleVO>> getList(SysRoleQueryConditionVO queryConditionVO);
 
     /**
@@ -101,7 +100,7 @@ public interface SysRoleControllerApi {
              @ApiImplicitParam(name = "page", value = "当前页码", required = true, dataType = "int", paramType = "query"),
              @ApiImplicitParam(name = "size", value = "分页尺寸", required = true, dataType = "int", paramType = "query")
     })
-    @GetMapping("/page")
+    @GetMapping("/sysRole/page")
     ResponseResult<Pager<SysRoleVO>> getPageList(SysRoleQueryConditionVO queryConditionVO,
                                                  @RequestParam(value = "page", defaultValue = "1") int page,
                                                  @RequestParam(value = "size", defaultValue = "10") int size);

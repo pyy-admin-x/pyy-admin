@@ -25,7 +25,6 @@ import java.util.List;
  * ---------------------------
  */
 @Api(tags="岗位管理")
-@RequestMapping(value = "/sysJob", produces = MediaType.APPLICATION_JSON_UTF8_VALUE )
 public interface SysJobControllerApi {
     /**
      * 保存岗位
@@ -34,7 +33,7 @@ public interface SysJobControllerApi {
      */
     @ApiOperation(value = "保存岗位", notes = "创建新岗位")
     @ApiImplicitParam(name = "record", value = "岗位对象", required = true, dataType = "SysJobSaveOrUpdateVO", paramType = "body")
-    @PostMapping
+    @PostMapping("/sysJob")
     ResponseResult<SysJobVO> save(@Valid @RequestBody SysJobSaveOrUpdateVO record);
 
     /**
@@ -48,7 +47,7 @@ public interface SysJobControllerApi {
             @ApiImplicitParam(name = "id", value = "岗位ID", required = true, dataType = "String", paramType = "path"),
             @ApiImplicitParam(name = "record", value = "岗位对象", required = true, dataType = "SysJobSaveOrUpdateVO", paramType = "body")
     })
-    @PutMapping("/{id}")
+    @PutMapping("/sysJob/{id}")
     ResponseResult<SysJobVO> update(@Valid @PathVariable(value = "id") String id, @RequestBody SysJobSaveOrUpdateVO record);
 
     /**
@@ -58,7 +57,7 @@ public interface SysJobControllerApi {
      */
     @ApiOperation(value = "删除岗位", notes = "根据ID删除岗位")
     @ApiImplicitParam(name = "id", value = "岗位ID", required = true, dataType = "String", paramType = "path")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/sysJob/{id}")
     ResponseResult delete(@Valid @PathVariable(value = "id") String id);
 
     /**
@@ -68,7 +67,7 @@ public interface SysJobControllerApi {
      */
     @ApiOperation(value = "批量删除岗位", notes = "批量删除岗位")
     @ApiImplicitParam(name = "ids", value = "岗位IDS", required = true, dataType = "List", paramType = "body")
-    @DeleteMapping("/delBatch")
+    @DeleteMapping("/sysJob/delBatch")
     ResponseResult deleteBatch(@Valid @RequestBody List<String> ids);
 
     /**
@@ -78,7 +77,7 @@ public interface SysJobControllerApi {
      */
     @ApiOperation(value = "岗位查询", notes = "根据ID岗位查询")
     @ApiImplicitParam(name = "id", value = "岗位ID", required = true, dataType = "String", paramType = "path")
-    @GetMapping("/{id}")
+    @GetMapping("/sysJob/{id}")
     ResponseResult<SysJobVO> findById(@Valid @PathVariable("id") String id);
 
     /**
@@ -87,7 +86,7 @@ public interface SysJobControllerApi {
      * @return
      */
     @ApiOperation(value = "岗位模糊查询", notes = "岗位不带分页模糊查询")
-    @GetMapping("/list")
+    @GetMapping("/sysJob/list")
     ResponseResult<List<SysJobVO>> getList(SysJobQueryConditionVO queryConditionVO);
 
     /**
@@ -102,7 +101,7 @@ public interface SysJobControllerApi {
             @ApiImplicitParam(name = "page", value = "当前页码", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "size", value = "分页尺寸", required = true, dataType = "int", paramType = "query")
     })
-    @GetMapping("/page")
+    @GetMapping("/sysJob/page")
     ResponseResult<Pager<SysJobVO>> getPageList(SysJobQueryConditionVO queryConditionVO,
                                                 @RequestParam(value = "page", defaultValue = "1") int page,
                                                 @RequestParam(value = "size", defaultValue = "10") int size);

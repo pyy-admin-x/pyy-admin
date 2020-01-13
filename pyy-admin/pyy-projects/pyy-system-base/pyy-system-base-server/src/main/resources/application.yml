@@ -14,6 +14,13 @@ spring:
     timezone: GMT+8
     serialization:
       write-dates-as-timestamps: true #使用时间戳，使用数值timestamp表示日期
+  #redis配置
+  redis:
+    database: 0
+    host: 10.10.50.230
+    port: 6379
+    password: 123456
+    timeout: 5000
   #数据源连接信息配置
   datasource:
     #1.JDBC配置

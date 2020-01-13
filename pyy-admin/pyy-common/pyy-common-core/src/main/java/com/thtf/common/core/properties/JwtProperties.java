@@ -1,4 +1,4 @@
-package com.thtf.common.auth.token.properties;
+package com.thtf.common.core.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "jwt")
 @PropertySource("classpath:jwt.properties")
 @Component
-public class TokenProperties {
+public class JwtProperties {
     /** token key */
     private String tokenKey = "Authorization";
 

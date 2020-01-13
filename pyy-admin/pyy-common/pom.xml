@@ -20,6 +20,7 @@
         <module>pyy-common-data</module>
         <module>pyy-common-log</module>
         <module>pyy-common-auth</module>
+        <module>pyy-common-feign</module>
     </modules>
 
 </project>

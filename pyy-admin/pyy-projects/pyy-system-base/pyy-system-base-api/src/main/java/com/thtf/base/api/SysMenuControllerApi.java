@@ -23,7 +23,6 @@ import java.util.List;
  * ---------------------------
  */
 @Api(tags = "菜单管理模块")
-@RequestMapping(value = "/sysMenu", produces = MediaType.APPLICATION_JSON_UTF8_VALUE )
 public interface SysMenuControllerApi {
 
     /**
@@ -33,7 +32,7 @@ public interface SysMenuControllerApi {
      */
     @ApiOperation(value = "保存菜单", notes = "创建新菜单")
     @ApiImplicitParam(name = "record", value = "菜单对象", required = true, dataType = "SysMenuSaveOrUpdateVO", paramType = "body")
-    @PostMapping
+    @PostMapping("/sysMenu")
     ResponseResult<SysMenuVO> save(@Valid @RequestBody SysMenuSaveOrUpdateVO record);
 
     /**
@@ -47,7 +46,7 @@ public interface SysMenuControllerApi {
             @ApiImplicitParam(name = "id", value = "菜单ID", required = true, dataType = "String", paramType = "path"),
             @ApiImplicitParam(name = "record", value = "菜单对象", required = true, dataType = "SysMenuSaveOrUpdateVO", paramType = "body")
     })
-    @PutMapping("/{id}")
+    @PutMapping("/sysMenu/{id}")
     ResponseResult<SysMenuVO> update(@Valid @PathVariable(value = "id") String id, @RequestBody SysMenuSaveOrUpdateVO record);
 
     /**
@@ -57,7 +56,7 @@ public interface SysMenuControllerApi {
      */
 	@ApiOperation(value = "删除菜单", notes = "根据ID菜单")
     @ApiImplicitParam(name = "id", value = "菜单ID", required = true, dataType = "String", paramType = "path")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/sysMenu/{id}")
     ResponseResult delete(@Valid @PathVariable(value = "id") String id);
 
     /**
@@ -67,7 +66,7 @@ public interface SysMenuControllerApi {
      */
     @ApiOperation(value = "菜单查询", notes = "根据ID菜单查询")
     @ApiImplicitParam(name = "id", value = "菜单ID", required = true, dataType = "String", paramType = "path")
-    @GetMapping("/{id}")
+    @GetMapping("/sysMenu/{id}")
     ResponseResult<SysMenuVO> findById(@Valid @PathVariable("id") String id);
 
     /**
@@ -76,7 +75,7 @@ public interface SysMenuControllerApi {
      * @return
      */
     @ApiOperation(value = "菜单树列表查询", notes = "菜单树列表查询")
-    @GetMapping("/treeList")
+    @GetMapping("/sysMenu/treeList")
     ResponseResult<List<SysMenuTreeVO>> getList(SysMenuQueryConditionVO queryConditionVO);
 
 }

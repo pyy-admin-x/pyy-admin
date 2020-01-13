@@ -8,16 +8,23 @@ import com.thtf.base.api.model.SysUser;
 import com.thtf.base.api.vo.SysUserQueryConditionVO;
 import com.thtf.base.api.vo.SysUserSaveOrUpdateVO;
 import com.thtf.base.api.vo.SysUserVO;
+import com.thtf.base.api.vo.ValidateImgVO;
 import com.thtf.base.server.enums.BaseServerCode;
 import com.thtf.base.server.mapper.SysUserMapper;
 import com.thtf.base.server.service.SysUserService;
+import com.thtf.common.core.constant.ImgCodeType;
 import com.thtf.common.core.exception.ExceptionCast;
 import com.thtf.common.core.response.CommonCode;
 import com.thtf.common.core.response.Pager;
+import com.thtf.common.core.utils.ImgCodeUtil;
+import com.thtf.common.core.utils.SnowflakeId;
+import com.wf.captcha.ArithmeticCaptcha;
+import com.wf.captcha.base.Captcha;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -39,6 +46,12 @@ import java.util.List;
 @Service
 @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.DEFAULT,timeout=36000,rollbackFor=Exception.class)
 public class SysUserServiceImpl implements SysUserService {
+
+    /** 验证码前缀 */
+    private static final String CODE_KEY = "img_code_";
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
 	@Autowired
 	private SysUserMapper sysUserMapper;
@@ -218,5 +231,23 @@ public class SysUserServiceImpl implements SysUserService {
         log.info("### 用户转换VO数据完毕###");
         // 分装分页查询结果
         return new Pager(total, sysUserVOList);
+    }
+
+    /**
+     * 获取图片验证码
+     * @param type
+     * @return
+     */
+    @Override
+    public ValidateImgVO getImgCode(String type) {
+        // 获取图片验证码
+        Captcha imgCode = ImgCodeUtil.getImgCode(type, 111, 36);
+        // 获取运算的结果：5
+        String result = imgCode.text();
+        String uuid = CODE_KEY + SnowflakeId.getId();
+        ValidateImgVO validateImgVO = new ValidateImgVO(imgCode.toBase64(), uuid);
+        // 保存验证码到redis
+        stringRedisTemplate.opsForValue().set(uuid, result);
+        return validateImgVO;
     }
 }

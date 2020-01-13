@@ -20,7 +20,7 @@ import java.util.List;
  * ---------------------------
  */
 @RestController
-public class ${table.className}Controller implements ${table.className}Controller{
+public class ${table.className}Controller implements ${table.className}ControllerApi{
 
 	@Autowired
 	private ${table.className}Service ${table.objectName}Service;
@@ -38,6 +38,12 @@ public class ${table.className}Controller implements ${table.className}Controlle
     @Override
     public ResponseResult delete(String id) {
         ${table.objectName}Service.delete(id);
+        return ResponseResult.SUCCESS();
+    }
+
+    @Override
+    public ResponseResult deleteBatch(List<String> ids) {
+        sysUserService.deleteBatch(ids);
         return ResponseResult.SUCCESS();
     }
 
