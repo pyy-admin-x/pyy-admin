@@ -1,5 +1,6 @@
 package com.thtf.common.core.model;
 
+import io.swagger.annotations.ApiModel;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -13,9 +14,14 @@ import lombok.experimental.Accessors;
  * ---------------------------
  */
 @NoArgsConstructor
-@AllArgsConstructor
 @Data
-public class LoginUser {
+@ApiModel(value = "ProfileUser",description = "用户信息")
+public class ProfileUser {
     private String userId;
     private String username;
+
+    public ProfileUser(String userId, String username) {
+        this.userId = userId;
+        this.username = username;
+    }
 }

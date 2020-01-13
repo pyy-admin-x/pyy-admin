@@ -11,7 +11,7 @@ import lombok.Data;
  * 版本：  v1.0
  * ---------------------------
  */
-public interface ImgCodeType {
+public interface ImgCodeTypeConstant {
     String PNG = "1"; // 字母+数字PNG类型
     String GIF = "2"; // 字母+数字GIF类型
     String CHINESE= "3"; // 中文类型

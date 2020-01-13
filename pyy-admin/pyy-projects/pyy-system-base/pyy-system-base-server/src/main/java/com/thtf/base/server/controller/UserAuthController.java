@@ -1,9 +1,9 @@
 package com.thtf.base.server.controller;
 
 import com.thtf.base.api.UserAuthControllerApi;
-import com.thtf.base.api.vo.ValidateImgVO;
+import com.thtf.base.api.vo.LoginUserVO;
 import com.thtf.base.server.service.SysUserService;
-import com.thtf.common.core.model.LoginUser;
+import com.thtf.common.core.model.ProfileUser;
 import com.thtf.common.core.response.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,13 +27,12 @@ public class UserAuthController implements UserAuthControllerApi {
 
     @Override
     public ResponseResult<String> getImgCode(String type) {
-        ValidateImgVO imgCode = sysUserService.getImgCode(type);
-        return ResponseResult.SUCCESS(imgCode);
+        return ResponseResult.SUCCESS(sysUserService.getImgCode(type));
     }
 
     @Override
-    public ResponseResult<String> login(LoginUser user) {
-        return null;
+    public ResponseResult<String> login(LoginUserVO loginUserVO) {
+        return ResponseResult.SUCCESS(sysUserService.login(loginUserVO));
     }
 
     @Override

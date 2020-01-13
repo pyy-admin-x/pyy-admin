@@ -1,9 +1,7 @@
 package com.thtf.base.server.service;
 
-import com.thtf.base.api.vo.SysUserQueryConditionVO;
-import com.thtf.base.api.vo.SysUserSaveOrUpdateVO;
-import com.thtf.base.api.vo.SysUserVO;
-import com.thtf.base.api.vo.ValidateImgVO;
+import com.thtf.base.api.vo.*;
+import com.thtf.common.core.model.ProfileUser;
 import com.thtf.common.core.response.Pager;
 
 import java.util.List;
@@ -72,4 +70,11 @@ public interface SysUserService {
      * @return
      */
     ValidateImgVO getImgCode(String type);
+
+    /**
+     * 用户登录
+     * @param loginUserVO
+     * @return
+     */
+    String login(LoginUserVO loginUserVO);
 }

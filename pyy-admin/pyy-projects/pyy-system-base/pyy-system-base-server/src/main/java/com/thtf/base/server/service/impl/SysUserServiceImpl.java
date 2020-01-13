@@ -1,24 +1,25 @@
 package com.thtf.base.server.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.thtf.base.api.model.SysUser;
-import com.thtf.base.api.vo.SysUserQueryConditionVO;
-import com.thtf.base.api.vo.SysUserSaveOrUpdateVO;
-import com.thtf.base.api.vo.SysUserVO;
-import com.thtf.base.api.vo.ValidateImgVO;
+import com.thtf.base.api.vo.*;
 import com.thtf.base.server.enums.BaseServerCode;
 import com.thtf.base.server.mapper.SysUserMapper;
 import com.thtf.base.server.service.SysUserService;
-import com.thtf.common.core.constant.ImgCodeType;
+import com.thtf.common.core.constant.CommonConstant;
 import com.thtf.common.core.exception.ExceptionCast;
+import com.thtf.common.core.model.ProfileUser;
+import com.thtf.common.core.properties.JwtProperties;
 import com.thtf.common.core.response.CommonCode;
 import com.thtf.common.core.response.Pager;
 import com.thtf.common.core.utils.ImgCodeUtil;
+import com.thtf.common.core.utils.JwtUtil;
 import com.thtf.common.core.utils.SnowflakeId;
-import com.wf.captcha.ArithmeticCaptcha;
+import com.thtf.common.core.utils.SpringSecurityUtil;
 import com.wf.captcha.base.Captcha;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +32,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ---------------------------
@@ -49,6 +52,9 @@ public class SysUserServiceImpl implements SysUserService {
 
     /** 验证码前缀 */
     private static final String CODE_KEY = "img_code_";
+
+    @Autowired
+    private JwtProperties jwtProperties;
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -244,10 +250,61 @@ public class SysUserServiceImpl implements SysUserService {
         Captcha imgCode = ImgCodeUtil.getImgCode(type, 111, 36);
         // 获取运算的结果：5
         String result = imgCode.text();
+        log.info("### 验证码：{} ###", result);
         String uuid = CODE_KEY + SnowflakeId.getId();
         ValidateImgVO validateImgVO = new ValidateImgVO(imgCode.toBase64(), uuid);
         // 保存验证码到redis
         stringRedisTemplate.opsForValue().set(uuid, result);
         return validateImgVO;
+    }
+
+    /**
+     * 用户登录
+     * @param loginUserVO
+     * @return
+     */
+    @Override
+    public String login(LoginUserVO loginUserVO) {
+        if (loginUserVO == null) {
+            ExceptionCast.cast(CommonCode.INVALID_PARAM);
+        }
+        // 查询验证码
+        String code = stringRedisTemplate.opsForValue().get(loginUserVO.getUuid());
+        // 清除验证码
+        stringRedisTemplate.delete(loginUserVO.getUuid());
+        if (StringUtils.isBlank(code)) {
+            log.debug("### 验证码已过期 ###");
+            ExceptionCast.cast(CommonCode.VALIDATE_CODE_EXPIRED);
+        }
+        if (StringUtils.isBlank(loginUserVO.getCode()) || !loginUserVO.getCode().equals(code)) {
+            log.debug("### 验证码错误 ###");
+            ExceptionCast.cast(CommonCode.VALIDATE_CODE_INVALID);
+        }
+        // 根据用户查询用户
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysUser::getUsername, loginUserVO.getUsername())
+                .eq(SysUser::getDeletedFlag, CommonConstant.UN_DELETED_FLAG);
+        SysUser sysUser = sysUserMapper.selectOne(queryWrapper);
+        if (sysUser == null || !SpringSecurityUtil.checkpassword(loginUserVO.getPassword(), sysUser.getPassword())) {
+            log.info("### 登录失败：用户不存在或密码错误 ###");
+            ExceptionCast.cast(CommonCode.USERNAME_OR_PASSWORD_ERROR);
+        }
+        // 用户状态
+        if (StrUtil.equals(CommonConstant.USER_STATUS_DISABLED, sysUser.getStatus())){
+            log.info("### 账号已停用，请联系管理员 ###");
+            ExceptionCast.cast(CommonCode.USER_ACCOUNT_FORBIDDEN);
+        }
+        // 登录成功：生成令牌
+        else {
+            // 获取到所有可以访问的API权限
+            //String apis = this.getApiCodesByRoleIds(roleIds);
+            Map<String, Object> extAttribute = new HashMap<>();
+            extAttribute.put(jwtProperties.getPermissionsKey(), "apis");
+            String token = JwtUtil.createToken(sysUser.getId(), sysUser.getUsername(), extAttribute);
+            log.info("### 用户登录成功 ###");
+            // 返回token
+            return token;
+        }
+        return null;
     }
 }

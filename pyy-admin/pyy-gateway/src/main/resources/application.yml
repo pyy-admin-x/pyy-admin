@@ -33,7 +33,8 @@ spring:
 auth:
   # 跳过认证的路由（白名单）
   skip-auth-urls:
-  - /login
+  - /v1/base-server/auth/imgCode
+  - /v1/base-server/auth/login
 
 # actuator相关配置
 management:

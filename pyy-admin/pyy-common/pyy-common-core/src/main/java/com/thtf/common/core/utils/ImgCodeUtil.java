@@ -1,7 +1,7 @@
 package com.thtf.common.core.utils;
 
 import cn.hutool.core.util.StrUtil;
-import com.thtf.common.core.constant.ImgCodeType;
+import com.thtf.common.core.constant.ImgCodeTypeConstant;
 import com.thtf.common.core.exception.ExceptionCast;
 import com.thtf.common.core.response.CommonCode;
 import com.wf.captcha.*;
@@ -30,22 +30,22 @@ public class ImgCodeUtil {
         }
         Captcha captcha = null;
         switch (type) {
-            case ImgCodeType.PNG:
+            case ImgCodeTypeConstant.PNG:
                 // png类型
                 captcha = new SpecCaptcha(width, height);
-            case ImgCodeType.GIF :
+            case ImgCodeTypeConstant.GIF :
                 // gif类型
                 captcha = new GifCaptcha(width, height);
                 break;
-            case ImgCodeType.CHINESE :
+            case ImgCodeTypeConstant.CHINESE :
                 // 中文类型
                 captcha = new ChineseCaptcha(width, height);
                 break;
-            case ImgCodeType.CHINESE_GIF :
+            case ImgCodeTypeConstant.CHINESE_GIF :
                 // 中文gif类型
                 captcha = new ChineseGifCaptcha(width, height);
                 break;
-            case ImgCodeType.ARITHMETIC :
+            case ImgCodeTypeConstant.ARITHMETIC :
                 // 算术类型
                 ArithmeticCaptcha arithmeticCaptcha = new ArithmeticCaptcha(width, height);
                 arithmeticCaptcha.setLen(2);  // 几位数运算，默认是两位

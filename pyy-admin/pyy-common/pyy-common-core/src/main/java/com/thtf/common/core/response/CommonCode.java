@@ -18,9 +18,16 @@ public enum CommonCode implements ResponseCode{
     TOKEN_INVALID(10004, "token无效"),
     PERMISSION_SIGNATURE_ERROR(10005, "JWT签名失败"),
 
+    VALIDATE_CODE_EXPIRED(40006, "验证码过期"),
+    VALIDATE_CODE_INVALID(40007, "验证码错误"),
+    USER_ACCOUNT_FORBIDDEN(40008, "账号已停用"),
+    USERNAME_IS_NULL(40009,"用户名不能为空"),
+    PASSWORD_IS_NULL(40010,"密码不能为空"),
+    CODE_IS_NULL(40011,"验证码不能为空"),
+    USERNAME_OR_PASSWORD_ERROR(40012, "用户名或密码错误"),
 
-    INVALID_PARAM(10003,"非法参数！"),
-    INVALID_REQUEST_METHOD( 10004, "请求方式错误！"),
+    INVALID_PARAM(40003,"非法参数！"),
+    INVALID_REQUEST_METHOD( 40004, "请求方式错误！"),
 
 
     SERVER_ERROR(99999,"抱歉，系统繁忙，请稍后重试！");

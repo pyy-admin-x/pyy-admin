@@ -1,7 +1,7 @@
 package com.thtf.common.core.utils;
 
 
-import com.thtf.common.core.model.LoginUser;
+import com.thtf.common.core.model.ProfileUser;
 
 /**
  * ---------------------------
@@ -13,13 +13,13 @@ import com.thtf.common.core.model.LoginUser;
  * ---------------------------
  */
 public class LoginUserUtil {
-    private static final ThreadLocal<LoginUser> CURRENT_USER = new ThreadLocal<>();
+    private static final ThreadLocal<ProfileUser> CURRENT_USER = new ThreadLocal<>();
 
-    public static void setCurrentUser(LoginUser user) {
+    public static void setCurrentUser(ProfileUser user) {
         CURRENT_USER.set(user);
     }
 
-    public static LoginUser getCurrentUser() {
+    public static ProfileUser getCurrentUser() {
         return CURRENT_USER.get();
     }
 

@@ -1,21 +1,16 @@
 package com.thtf.base.api;
 
-import com.thtf.base.api.vo.SysUserQueryConditionVO;
-import com.thtf.base.api.vo.SysUserSaveOrUpdateVO;
-import com.thtf.base.api.vo.SysUserVO;
-import com.thtf.common.core.model.LoginUser;
-import com.thtf.common.core.response.Pager;
+import com.thtf.base.api.vo.LoginUserVO;
+import com.thtf.common.core.model.ProfileUser;
 import com.thtf.common.core.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.util.List;
 
 /**
  * ---------------------------
@@ -40,13 +35,13 @@ public interface UserAuthControllerApi {
 
     /**
      * 用户登录
-     * @param user
+     * @param loginUserVO
      * @return
      */
     @ApiOperation(value = "用户登录", notes = "用户登录")
-    @ApiImplicitParam(name = "user", value = "用户对象", required = true, dataType = "LoginUser", paramType = "body")
+    @ApiImplicitParam(name = "loginUserVO", value = "用户对象", required = true, dataType = "LoginUserVO", paramType = "body")
     @PostMapping("/auth/login")
-    ResponseResult<String> login(@Valid @RequestBody LoginUser user);
+    ResponseResult<String> login(@Valid @RequestBody LoginUserVO loginUserVO);
 
     /**
      * 退出登录

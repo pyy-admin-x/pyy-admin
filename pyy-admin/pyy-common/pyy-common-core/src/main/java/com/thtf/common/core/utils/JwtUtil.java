@@ -1,7 +1,7 @@
 package com.thtf.common.core.utils;
 
 
-import com.thtf.common.core.model.LoginUser;
+import com.thtf.common.core.model.ProfileUser;
 import com.thtf.common.core.properties.JwtProperties;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
@@ -117,11 +117,11 @@ public class JwtUtil {
      * 从token中获取用户
      * @return
      */
-    public static LoginUser getLoginUser(Claims claims){
+    public static ProfileUser getLoginUser(Claims claims){
         String userId = getUserId(claims);
         String username = getUsername(claims);
-        LoginUser loginUser = new LoginUser(userId, username);
-        return loginUser;
+        ProfileUser profileUser = new ProfileUser(userId, username);
+        return profileUser;
     }
 
     /**

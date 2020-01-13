@@ -25,6 +25,9 @@ public class JwtProperties {
     /** token value 前缀 */
     private String tokenPrefix = "Bearer ";
 
+    /** 用户权限标识 */
+    private String permissionsKey = "permissions";
+
     /** 代表这个JWT的签发主体 */
     private String clientId;
 
