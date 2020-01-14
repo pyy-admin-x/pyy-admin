@@ -53,4 +53,12 @@ public interface UserAuthControllerApi {
     @PostMapping("/auth/logout")
     ResponseResult logout(HttpServletRequest request);
 
+    /**
+     * 查询用户配置信息
+     * @return
+     */
+    @ApiOperation("查询用户配置信息")
+    @GetMapping("/auth/info")
+    ResponseResult getProfileInfo(HttpServletRequest request);
+
 }

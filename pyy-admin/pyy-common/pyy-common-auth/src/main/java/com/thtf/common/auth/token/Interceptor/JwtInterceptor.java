@@ -1,7 +1,9 @@
 package com.thtf.common.auth.token.Interceptor;
 
 
+import cn.hutool.core.collection.CollUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.thtf.common.auth.token.annonation.RequirePermissions;
 import com.thtf.common.core.properties.JwtProperties;
 import com.thtf.common.core.response.CommonCode;
@@ -21,6 +23,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * ========================
@@ -40,8 +46,8 @@ public class JwtInterceptor extends HandlerInterceptorAdapter {
 
     public static final String USER_CLAIMS = "user_claims";
 
-    /** 权限标识 */
-    private static final String PERMISSION_KEY = "permissions";
+    /** 管理员角色标识 */
+    private static final String ADMIN_ROLE_CODE = "ADMIN";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
@@ -58,27 +64,35 @@ public class JwtInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
         // 请求中获取key为Authorization的头信息
-        String authorization = request.getHeader(jwtProperties.getTokenKey());
-        log.info("### authorization={} ###", authorization);
+        String token = request.getHeader(jwtProperties.getTokenKey());
+        log.info("### token={} ###", token);
         // 判断请求头信息是否为空，或者是否已Bearer开头
-        if (!StringUtils.isEmpty(authorization)  && authorization.startsWith(jwtProperties.getTokenPrefix())) {
-            // 前后端约定头信息内容以 Bearer+空格+token 形式组成
-            String token = authorization.replace(jwtProperties.getTokenPrefix(), "");
+        if (!StringUtils.isEmpty(token) ) {
             // 验证token，并返回claims
-            Claims claims = (Claims) JwtUtil.parseToken(token, jwtProperties.getBase64Secret());
+            Claims claims = JwtUtil.parseToken(token, jwtProperties.getBase64Secret());
             if (claims != null) {
                 // 绑定上下文
                 LoginUserUtil.setCurrentUser(JwtUtil.getLoginUser(claims));
-                // 通过claims获取到当前用户的可访问API权限字符串
-                String apis = (String) claims.get(PERMISSION_KEY); //sys:dept:add
-                // 获取当前请求接口授权地址
-                String apiCode = requirePermissions.value();
-                // 判断当前用户是否具有相应的请求权限
-                if (apis.contains(apiCode)) {
-                    request.setAttribute(USER_CLAIMS, claims);
-                    log.info("### 鉴权通过，放行请求 ###");
-                    return true;
+                // 通过claims获取到当前用户角色和权限信息
+                Map<String, Object> roles = (HashMap<String, Object>)claims.get(jwtProperties.getRolePremissionKey());
+                if (CollUtil.isNotEmpty(roles)) {
+                    List<HashMap<String, Object>> roleList = (List<HashMap<String, Object>>)roles.get("roleList");
+                    List<String> permissionList = (List<String>) roles.get("permissionList");
+                    List<String> roleCodeList = roleList.stream().map(role -> role.get("code").toString()).collect(Collectors.toList());
+                    if (roleCodeList.contains(ADMIN_ROLE_CODE)) {
+                        log.info("### 当前角色为管理员，直接放行请求 ###");
+                        return true;
+                    }
+                    // 获取当前请求接口授权地址
+                    String apiCode = requirePermissions.value();
+                    // 判断当前用户是否具有相应的请求权限
+                    if (permissionList.contains(apiCode)) {
+                        request.setAttribute(USER_CLAIMS, claims);
+                        log.info("### 鉴权通过，放行请求 ###");
+                        return true;
+                    }
                 }
+
                 log.info("### 权限不足，禁止访问 ###");
                 responseError(response, CommonCode.UNAUTHORISE);
             }

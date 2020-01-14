@@ -2,6 +2,7 @@ package com.thtf.base.server.controller;
 
 import com.thtf.base.api.UserAuthControllerApi;
 import com.thtf.base.api.vo.LoginUserVO;
+import com.thtf.base.api.vo.ProfileVO;
 import com.thtf.base.api.vo.ValidateImgVO;
 import com.thtf.base.server.service.SysUserService;
 import com.thtf.common.core.model.ProfileUser;
@@ -40,5 +41,10 @@ public class UserAuthController implements UserAuthControllerApi {
     public ResponseResult logout(HttpServletRequest request) {
         sysUserService.logout(request);
         return ResponseResult.SUCCESS();
+    }
+
+    @Override
+    public ResponseResult<ProfileVO> getProfileInfo(HttpServletRequest request) {
+        return ResponseResult.SUCCESS(sysUserService.getProfileInfo(request));
     }
 }

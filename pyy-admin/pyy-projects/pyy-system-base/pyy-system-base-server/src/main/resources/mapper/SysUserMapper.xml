@@ -47,6 +47,7 @@
         </association>
         <collection property="roleList" ofType="com.thtf.base.api.vo.SysRoleVO">
             <id column="role_id" jdbcType="VARCHAR" property="id"/>
+            <result column="role_code" jdbcType="VARCHAR" property="code"/>
             <result column="role_name" jdbcType="VARCHAR" property="name"/>
         </collection>
     </resultMap>
@@ -121,6 +122,7 @@
         c.id job_id,
         c.name job_name,
         r.id role_id,
+        r.code role_code,
         r.name role_name
         from sys_user a left join sys_dept b on a.dept_id = b.id and b.deleted_flag = 0
         left join sys_job c on a.job_id = c.id and c.deleted_flag = 0

@@ -63,7 +63,7 @@ public class JwtUtil {
 
             //添加构成JWT的参数
             JwtBuilder builder = Jwts.builder().setHeaderParam("typ", "JWT")
-                    .setId(encryUserId)
+                    .claim("userId", encryUserId)
                     .setSubject(username) // 代表这个JWT的主体，即它的所有人了
                     .setIssuer(jwtUtil.jwtProperties.getClientId()) // 代表这个JWT的签发者
                     .setIssuedAt(new Date()) // 是一个时间戳，代表这个JWT的签发时间

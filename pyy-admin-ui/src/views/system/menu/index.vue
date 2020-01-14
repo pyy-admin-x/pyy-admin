@@ -118,7 +118,7 @@
           this.handleQuery()
 
         }).catch(() => {
-          this.$message({ype: 'info', message: '已取消删除'});
+          //this.$message({ype: 'info', message: '已取消删除'});
         });
       }
     },

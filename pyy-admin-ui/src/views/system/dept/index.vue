@@ -78,9 +78,9 @@
           this.$message({type: 'success', message: '删除成功!'});
           // 刷新列表
           this.handleQuery()
-
-        }).catch(() => {
-          this.$message({ype: 'info', message: '已取消删除'});
+        }).catch((err) => {
+          console.log(err)
+          //this.$message({ype: 'info', message: '已取消删除'});
         });
       }
     },

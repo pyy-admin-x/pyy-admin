@@ -6,7 +6,7 @@ export const getCode = () => createAPI(`${BASE_SERVER_API_GATEWAY_URL}/auth/imgC
 
 export const login = (data) => createAPI(`${BASE_SERVER_API_GATEWAY_URL}/auth/login`, 'post', data)
 
-export const getInfo = (token) => createAPI('/user/info', 'get', token)
+export const getInfo = () => createAPI(`${BASE_SERVER_API_GATEWAY_URL}/auth/info`, 'get', null)
 
 export const logout = () => createAPI(`${BASE_SERVER_API_GATEWAY_URL}/auth/logout`, 'post')
 

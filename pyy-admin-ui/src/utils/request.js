@@ -42,18 +42,26 @@ service.interceptors.response.use(
     const res = response.data
     if (res.code !== 200) {
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.code === 10001 || res.code === 10002 || res.code === 10003 || res.code === 10004 || res.code === 10005) {
-        store.dispatch('user/resetToken').then(() => {
-          location.reload()
+      if (res.code == 10002) {
+        Notification({
+          title: '提示',
+          message: res.message || 'Error',
+          type: 'warning'
+        });
+      } else if(res.code === 10001 || res.code === 10003 || res.code === 10004 || res.code === 10005) {
+        MessageBox.confirm(
+          '登录状态已过期，您可以继续留在该页面，或者重新登录',
+          '系统提示',
+          {
+            confirmButtonText: '重新登录',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }
+        ).then(() => {
+          store.dispatch('user/logout').then(() => {
+            location.reload() // 为了重新实例化vue-router对象 避免bug
+          })
         })
-        // // to re-login
-        // MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-        //   confirmButtonText: 'Re-Login',
-        //   cancelButtonText: 'Cancel',
-        //   type: 'warning'
-        // }).then(() => {
-        //
-        // })
       } else {
         Notification({ title: '提示', message: res.message || 'Error', type: 'error'});
         // Message({

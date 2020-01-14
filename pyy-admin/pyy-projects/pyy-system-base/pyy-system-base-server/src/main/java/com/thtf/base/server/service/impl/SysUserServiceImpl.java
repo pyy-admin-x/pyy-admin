@@ -11,10 +11,7 @@ import com.thtf.base.api.model.SysUser;
 import com.thtf.base.api.model.SysUserRole;
 import com.thtf.base.api.vo.*;
 import com.thtf.base.server.enums.BaseServerCode;
-import com.thtf.base.server.mapper.SysDeptMapper;
-import com.thtf.base.server.mapper.SysJobMapper;
-import com.thtf.base.server.mapper.SysUserMapper;
-import com.thtf.base.server.mapper.SysUserRoleMapper;
+import com.thtf.base.server.mapper.*;
 import com.thtf.base.server.service.SysUserService;
 import com.thtf.common.core.constant.CommonConstant;
 import com.thtf.common.core.exception.ExceptionCast;
@@ -22,11 +19,9 @@ import com.thtf.common.core.model.ProfileUser;
 import com.thtf.common.core.properties.JwtProperties;
 import com.thtf.common.core.response.CommonCode;
 import com.thtf.common.core.response.Pager;
-import com.thtf.common.core.utils.ImgCodeUtil;
-import com.thtf.common.core.utils.JwtUtil;
-import com.thtf.common.core.utils.SnowflakeId;
-import com.thtf.common.core.utils.SpringSecurityUtil;
+import com.thtf.common.core.utils.*;
 import com.wf.captcha.base.Captcha;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -42,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * ---------------------------
@@ -74,6 +70,9 @@ public class SysUserServiceImpl implements SysUserService {
 
 	@Autowired
     private SysJobMapper sysJobMapper;
+
+	@Autowired
+    private SysMenuMapper sysMenuMapper;
 
 	@Autowired
     private SysUserRoleMapper sysUserRoleMapper;
@@ -326,10 +325,12 @@ public class SysUserServiceImpl implements SysUserService {
         }
         // 登录成功：生成令牌
         else {
-            // 获取到所有可以访问的API权限
-            //String apis = this.getApiCodesByRoleIds(roleIds);
+            // 获取当前用户的角色和权限信息
+            ProfileVO profileVO = this.getProfileVO(sysUser.getId());
+            Map<String, Object> roles = profileVO.getRoles();
+
             Map<String, Object> extAttribute = new HashMap<>();
-            extAttribute.put(jwtProperties.getPermissionsKey(), "apis");
+            extAttribute.put(jwtProperties.getRolePremissionKey(), roles);
             String token = JwtUtil.createToken(sysUser.getId(), sysUser.getUsername(), extAttribute);
             log.info("### 用户登录成功 ###");
             // 保存token到redis
@@ -341,6 +342,10 @@ public class SysUserServiceImpl implements SysUserService {
         return null;
     }
 
+    /**
+     * 用户退出
+     * @param request
+     */
     @Override
     public void logout(HttpServletRequest request) {
         // 清除redis 等业务
@@ -350,5 +355,43 @@ public class SysUserServiceImpl implements SysUserService {
             stringRedisTemplate.delete(token.replace("Bearer ", ""));
             log.info("### redis token 删除成功 ###");
         }
+    }
+
+    /**
+     * 获取当前登录用户配置信息
+     * @return
+     */
+    @Override
+    public ProfileVO getProfileInfo(HttpServletRequest request) {
+        String token = request.getHeader(jwtProperties.getTokenKey());
+        if (StrUtil.isBlank(token)) {
+            ExceptionCast.cast(CommonCode.UNAUTHENTICATED);
+        }
+        Claims claims = JwtUtil.parseToken(token, jwtProperties.getBase64Secret());
+        String userId = JwtUtil.getUserId(claims);
+        log.info("### userId={} ###", userId);
+        ProfileVO profileVO = getProfileVO(userId);
+        return profileVO;
+    }
+
+    // 根据id获取配置信息
+    private ProfileVO getProfileVO(String userId) {
+        SysUserVO sysUserVO = this.findById(userId);
+        ProfileVO profileVO = new ProfileVO();
+        BeanUtils.copyProperties(sysUserVO, profileVO);
+
+        Map<String, Object> roles = new HashMap<>();
+        // 取出当前用户拥有所有角色信息
+        List<SysRoleVO> roleList = sysUserVO.getRoleList();
+        roles.put("roleList", roleList);
+        // 根据角色ids查询关联权限信息
+        if (CollUtil.isNotEmpty(roleList)) {
+            List<String> roleIds = roleList.stream().map(SysRoleVO::getId).collect(Collectors.toList());
+            List<SysMenuVO> menuVOList = sysMenuMapper.selectMenuListByRoleIds(roleIds);
+            List<String> permissionList = menuVOList.stream().map(SysMenuVO::getPermission).collect(Collectors.toList());
+            roles.put("permissionList", permissionList);
+        }
+        profileVO.setRoles(roles);
+        return profileVO;
     }
 }

@@ -2,6 +2,10 @@ package com.thtf.base.server.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.thtf.base.api.model.*;
+import com.thtf.base.api.vo.SysMenuVO;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * ---------------------------
@@ -13,4 +17,5 @@ import com.thtf.base.api.model.*;
  * ---------------------------
  */
 public interface SysMenuMapper extends BaseMapper<SysMenu>{
+    List<SysMenuVO> selectMenuListByRoleIds(@Param("roleIds") List<String> roleIds);
 }

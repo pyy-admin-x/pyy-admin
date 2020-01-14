@@ -84,4 +84,10 @@ public interface SysUserService {
      * @param request
      */
     void logout(HttpServletRequest request);
+
+    /**
+     * 获取当前用户配置信息
+     * @return
+     */
+    ProfileVO getProfileInfo(HttpServletRequest request);
 }
