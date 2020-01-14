@@ -12,20 +12,12 @@
             <i class="el-icon-caret-bottom"/>
           </div>
           <el-dropdown-menu slot="dropdown" class="user-dropdown">
-            <router-link to="/">
-              <el-dropdown-item>
-                Home
-              </el-dropdown-item>
+            <router-link to="/user/center">
+              <el-dropdown-item icon="el-icon-user">个人信息</el-dropdown-item>
             </router-link>
-            <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-              <el-dropdown-item>Github</el-dropdown-item>
-            </a>
-            <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-              <el-dropdown-item>Docs</el-dropdown-item>
-            </a>
-            <el-dropdown-item divided>
-              <span style="display:block;" @click="logout">Log Out</span>
-            </el-dropdown-item>
+            <div @click="logout">
+              <el-dropdown-item divided ><svg-icon icon-class="logout"/> 退出</el-dropdown-item>
+            </div>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -54,9 +46,17 @@
       toggleSideBar() {
         this.$store.dispatch('app/toggleSideBar')
       },
-      async logout() {
-        await this.$store.dispatch('user/logout')
-        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      logout() {
+        this.$confirm('确定注销并退出系统吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          debugger
+          this.$store.dispatch('user/logout').then(() => {
+            location.reload()
+          })
+        })
       }
     }
   }

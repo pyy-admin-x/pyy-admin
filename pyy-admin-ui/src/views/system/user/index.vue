@@ -2,7 +2,7 @@
   <div class="container">
     <!--工具栏-->
     <div class="toolbar">
-      <el-form :inline="true" :model="params">
+      <el-form :inline="true" :model="params" size="small">
         <el-form-item>
           <el-input v-model="params.name" placeholder="名称"></el-input>
         </el-form-item>
@@ -15,19 +15,26 @@
       </el-form>
     </div>
     <!--表格内容栏-->
-    <el-table :data="list" @selection-change="handleSelectionChange">style="width: 100%">
+    <el-table :data="userList" @selection-change="handleSelectionChange">style="width: 100%">
       <el-table-column type="selection" width="55"/>
-      <el-table-column prop="id" label="用户ID"/>
+      <el-table-column prop="name" label="昵称"/>
       <el-table-column prop="username" label="用户名"/>
-      <el-table-column prop="password" label="密码"/>
-      <el-table-column prop="deptId" label="部门ID"/>
-      <el-table-column prop="jobId" label="岗位ID"/>
+      <el-table-column prop="dept" label="部门">
+        <template slot-scope="scope">
+          {{scope.row.dept ? scope.row.dept.name : ''}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="job" label="岗位">
+        <template slot-scope="scope">
+          {{scope.row.job ? scope.row.job.name : ''}}
+        </template>
+      </el-table-column>
       <el-table-column prop="email" label="邮箱"/>
       <el-table-column prop="phone" label="手机号"/>
-      <el-table-column prop="avatar" label="头像"/>
       <el-table-column prop="status" label="状态">
         <template slot-scope="scope">
-          {{scope.row.status == 0 ? '正常' : '锁定'}}
+          <el-tag size="small" type="primary" v-if="scope.row.status == 0">正常</el-tag>
+          <el-tag size="small" type="danger" v-if="scope.row.status == 1">锁定</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间">
@@ -35,7 +42,7 @@
           {{scope.row.createTime | dateFormat}}
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" width="180">
         <template slot-scope="scope">
           <el-button size="mini" icon="el-icon-edit" type="primary" @click="handleEdit(scope.row.id)">编辑</el-button>
           <el-button size="mini" icon="el-icon-delete" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
@@ -65,7 +72,7 @@
   export default {
     data() {
       return {
-        list: [], // 用户列表
+        userList: [], // 用户列表
         total: 0,
         currentPage: 1,
         page: 1,//页码
@@ -87,7 +94,7 @@
         const result = await sysUserAPI.getSysUserPageList(this.page, this.size, this.params)
         const queryResult = result.data
         this.total = queryResult.total
-        this.list = queryResult.records
+        this.userList = queryResult.records
       },
       handleSelectionChange(selections) {
         this.selections = selections

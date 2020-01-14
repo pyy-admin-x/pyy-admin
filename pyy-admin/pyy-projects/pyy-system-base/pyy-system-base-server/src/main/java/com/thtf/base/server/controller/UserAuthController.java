@@ -2,6 +2,7 @@ package com.thtf.base.server.controller;
 
 import com.thtf.base.api.UserAuthControllerApi;
 import com.thtf.base.api.vo.LoginUserVO;
+import com.thtf.base.api.vo.ValidateImgVO;
 import com.thtf.base.server.service.SysUserService;
 import com.thtf.common.core.model.ProfileUser;
 import com.thtf.common.core.response.ResponseResult;
@@ -26,7 +27,7 @@ public class UserAuthController implements UserAuthControllerApi {
     private SysUserService sysUserService;
 
     @Override
-    public ResponseResult<String> getImgCode(String type) {
+    public ResponseResult<ValidateImgVO> getImgCode(String type) {
         return ResponseResult.SUCCESS(sysUserService.getImgCode(type));
     }
 
@@ -37,6 +38,7 @@ public class UserAuthController implements UserAuthControllerApi {
 
     @Override
     public ResponseResult logout(HttpServletRequest request) {
-        return null;
+        sysUserService.logout(request);
+        return ResponseResult.SUCCESS();
     }
 }

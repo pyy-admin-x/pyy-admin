@@ -1,7 +1,15 @@
 package com.thtf.base.server.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.thtf.base.api.model.SysUser;
+import com.thtf.base.api.vo.SysJobQueryConditionVO;
+import com.thtf.base.api.vo.SysJobVO;
+import com.thtf.base.api.vo.SysUserQueryConditionVO;
+import com.thtf.base.api.vo.SysUserVO;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * ---------------------------
@@ -13,4 +21,10 @@ import com.thtf.base.api.model.SysUser;
  * ---------------------------
  */
 public interface SysUserMapper extends BaseMapper<SysUser>{
+
+    SysUserVO selectUserById(String id);
+
+    List<SysUserVO> selectUserList(@Param("queryConditionVO") SysUserQueryConditionVO queryConditionVO);
+
+    List<SysUserVO> selectUserList(Page<SysUserVO> page, @Param("queryConditionVO") SysUserQueryConditionVO queryConditionVO);
 }

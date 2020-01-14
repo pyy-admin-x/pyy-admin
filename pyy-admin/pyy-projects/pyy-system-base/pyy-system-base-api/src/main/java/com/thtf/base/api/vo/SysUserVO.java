@@ -1,8 +1,14 @@
 package com.thtf.base.api.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.thtf.base.api.model.SysDept;
+import com.thtf.base.api.model.SysJob;
+import com.thtf.base.api.model.SysRole;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * ---------------------------
@@ -25,10 +31,10 @@ public class SysUserVO {
     private String username;
 	@ApiModelProperty("密码")
     private String password;
-	@ApiModelProperty("部门ID")
-    private String deptId;
-	@ApiModelProperty("岗位ID")
-    private String jobId;
+	@ApiModelProperty("部门")
+    private SysDeptVO dept;
+	@ApiModelProperty("岗位")
+    private SysJobVO job;
 	@ApiModelProperty("邮箱")
     private String email;
 	@ApiModelProperty("手机号")
@@ -49,4 +55,6 @@ public class SysUserVO {
     private String updateName;
 	@ApiModelProperty("修改时间")
     private java.util.Date updateTime;
+	@ApiModelProperty("角色")
+    private List<SysRoleVO> roleList;
 }

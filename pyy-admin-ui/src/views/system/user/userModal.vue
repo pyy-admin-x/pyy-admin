@@ -9,9 +9,6 @@
         <el-form-item label="用户名" prop="username">
            <el-input v-model="sysUserForm.username" auto-complete="off"/>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-           <el-input type="password" v-model="sysUserForm.password" auto-complete="off"/>
-        </el-form-item>
         <el-form-item label="用户昵称" prop="name">
           <el-input v-model="sysUserForm.name" auto-complete="off"/>
         </el-form-item>
@@ -42,7 +39,7 @@
           <el-radio v-model="sysUserForm.status" label="1">锁定</el-radio>
         </el-form-item>
         <el-form-item label="角色" prop="roleIds">
-          <el-select v-model="sysUserForm.roleIds" clearable multiple collapse-tags=true placeholder="请选择角色">
+          <el-select v-model="sysUserForm.roleIds" clearable multiple collapse-tags placeholder="请选择角色">
             <el-option
               v-for="(role, index) in roleList" :key="index"
               :label="role.name"
@@ -87,7 +84,6 @@
           id: '',
           name: '',
           username: '',
-          password: '',
           deptId: null,
           jobId: null,
           roleIds:[],
@@ -153,13 +149,17 @@
             this.sysUserForm.id = sysUser.id
             this.sysUserForm.name = sysUser.name
             this.sysUserForm.username = sysUser.username
-            this.sysUserForm.password = sysUser.password
-            this.sysUserForm.deptId = sysUser.deptId
-            this.sysUserForm.jobId = sysUser.jobId
+            this.sysUserForm.deptId = sysUser.dept.id
+            this.sysUserForm.jobId = sysUser.job.id
             this.sysUserForm.email = sysUser.email
             this.sysUserForm.phone = sysUser.phone
             this.sysUserForm.avatar = sysUser.avatar
             this.sysUserForm.status = sysUser.status
+            let roleIds = []
+            sysUser.roleList.map(role => {
+              roleIds.push(role.id)
+            })
+            this.sysUserForm.roleIds = roleIds
           })
         })
       },

@@ -1,5 +1,6 @@
 package com.thtf.base.api.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,6 +18,7 @@ import java.util.List;
  */
 @Data
 @ApiModel(value = "SysRoleVO",description = "角色类")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SysRoleVO {
 
 	@ApiModelProperty("岗位ID")

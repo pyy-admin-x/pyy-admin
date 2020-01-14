@@ -1,8 +1,5 @@
-/**
- * 用户管理
- */
 
-import { login, logout, getInfo } from '@/api/user'
+import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
@@ -27,9 +24,9 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { username, password } = userInfo
+    const { username, password, code, uuid } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      login({ username: username.trim(), password: password, code: code, uuid: uuid }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data)
         setToken(data)
@@ -49,9 +46,7 @@ const actions = {
         if (!data) {
           reject('Verification failed, please Login again.')
         }
-
         const { name, avatar } = data
-
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         resolve(data)
@@ -64,7 +59,7 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+      logout().then(() => {
         commit('SET_TOKEN', '')
         removeToken()
         resetRouter()

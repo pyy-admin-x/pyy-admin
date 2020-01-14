@@ -2,9 +2,9 @@ package com.thtf.gateway.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.thtf.common.core.properties.JwtProperties;
-import com.thtf.common.core.utils.JwtUtil;
 import com.thtf.common.core.response.CommonCode;
 import com.thtf.common.core.response.ResponseResult;
+import com.thtf.common.core.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.Data;
@@ -16,6 +16,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -26,9 +27,6 @@ import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-
-import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_PREDICATE_ROUTE_ATTR;
-import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
 
 /**
  * ---------------------------
@@ -46,6 +44,9 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 public class AuthenticationFilter implements GlobalFilter, Ordered {
     @Autowired
     private JwtProperties jwtProperties;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     /** 白名单路径 */
     private String[] skipAuthUrls;
@@ -98,9 +99,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         } else {
             // 有token, 截取有效token
             token = token.substring(7);
-
-
-            //有token
+            // 判断token是否存在（是否已退出）
+            Boolean exist = stringRedisTemplate.hasKey(token);
+            if (!exist) {
+                log.info("### 用户已退出，请重新登录 ###");
+                return authError(response, CommonCode.TOKEN_INVALID);
+            }
             try {
                 // 验证token是否有效--无效已做异常抛出，由全局异常处理后返回对应信息
                 Claims claims = JwtUtil.parseToken(token, jwtProperties.getBase64Secret());

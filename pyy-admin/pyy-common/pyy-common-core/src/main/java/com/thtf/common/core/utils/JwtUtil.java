@@ -75,7 +75,7 @@ public class JwtUtil {
             }
 
             //添加Token过期时间
-            int TTLMillis = jwtUtil.jwtProperties.getExpiresSecond();
+            int TTLMillis = jwtUtil.jwtProperties.getExpiresSecond() * 1000;
             if (TTLMillis >= 0) {
                 long expMillis = nowMillis + TTLMillis;
                 Date exp = new Date(expMillis);
@@ -99,18 +99,10 @@ public class JwtUtil {
      * @return
      */
     public static Claims parseToken(String token, String base64Security) {
-        try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(DatatypeConverter.parseBase64Binary(base64Security))
-                    .parseClaimsJws(token).getBody();
-            return claims;
-        } catch (ExpiredJwtException eje) {
-            log.info("===== Token过期 =====");
-        } catch (Exception e){
-            log.info("===== token解析异常 =====");
-            e.printStackTrace();
-        }
-        return null;
+        Claims claims = Jwts.parser()
+                .setSigningKey(DatatypeConverter.parseBase64Binary(base64Security))
+                .parseClaimsJws(token).getBody();
+        return claims;
     }
 
     /**

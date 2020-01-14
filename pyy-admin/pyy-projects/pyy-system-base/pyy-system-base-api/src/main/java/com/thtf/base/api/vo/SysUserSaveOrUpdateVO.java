@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * ---------------------------
  * 用户 (SysUser)         
@@ -26,6 +28,8 @@ public class SysUserSaveOrUpdateVO {
 	private String deptId;
 	@ApiModelProperty("岗位ID")
 	private String jobId;
+	@ApiModelProperty("角色ID集合")
+	private List<String> roleIds;
 	@ApiModelProperty("邮箱")
 	private String email;
 	@ApiModelProperty("手机号")
@@ -34,4 +38,5 @@ public class SysUserSaveOrUpdateVO {
 	private String avatar;
 	@ApiModelProperty("状态：0=正常 1=锁定")
 	private String status;
+
 }

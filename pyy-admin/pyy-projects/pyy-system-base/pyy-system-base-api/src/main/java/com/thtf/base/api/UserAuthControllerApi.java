@@ -1,6 +1,7 @@
 package com.thtf.base.api;
 
 import com.thtf.base.api.vo.LoginUserVO;
+import com.thtf.base.api.vo.ValidateImgVO;
 import com.thtf.common.core.model.ProfileUser;
 import com.thtf.common.core.response.ResponseResult;
 import io.swagger.annotations.Api;
@@ -31,7 +32,7 @@ public interface UserAuthControllerApi {
     @ApiOperation(value = "获取图形验证码", notes = "获取图形（算数）验证码  1:字母+数字PNG类型 2:字母+数字GIF类型 3:中文类型 4:中文gif类型 5:算术类型")
     @ApiImplicitParam(name = "type", value = "验证类型", required = true, dataType = "String", paramType = "query")
     @GetMapping("/auth/imgCode")
-    ResponseResult<String> getImgCode(@Valid @NotBlank(message = "验证码类型不能为空") @RequestParam("type") String type);
+    ResponseResult<ValidateImgVO> getImgCode(@Valid @NotBlank(message = "验证码类型不能为空") @RequestParam("type") String type);
 
     /**
      * 用户登录
@@ -49,7 +50,7 @@ public interface UserAuthControllerApi {
      * @return
      */
     @ApiOperation("退出登录")
-    @GetMapping("/auth/logout")
+    @PostMapping("/auth/logout")
     ResponseResult logout(HttpServletRequest request);
 
 }

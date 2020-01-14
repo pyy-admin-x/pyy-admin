@@ -4,6 +4,7 @@ import com.thtf.base.api.vo.*;
 import com.thtf.common.core.model.ProfileUser;
 import com.thtf.common.core.response.Pager;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -77,4 +78,10 @@ public interface SysUserService {
      * @return
      */
     String login(LoginUserVO loginUserVO);
+
+    /**
+     * 用户退出
+     * @param request
+     */
+    void logout(HttpServletRequest request);
 }

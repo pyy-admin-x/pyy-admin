@@ -5,10 +5,16 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.thtf.base.api.model.SysDept;
+import com.thtf.base.api.model.SysJob;
 import com.thtf.base.api.model.SysUser;
+import com.thtf.base.api.model.SysUserRole;
 import com.thtf.base.api.vo.*;
 import com.thtf.base.server.enums.BaseServerCode;
+import com.thtf.base.server.mapper.SysDeptMapper;
+import com.thtf.base.server.mapper.SysJobMapper;
 import com.thtf.base.server.mapper.SysUserMapper;
+import com.thtf.base.server.mapper.SysUserRoleMapper;
 import com.thtf.base.server.service.SysUserService;
 import com.thtf.common.core.constant.CommonConstant;
 import com.thtf.common.core.exception.ExceptionCast;
@@ -31,6 +37,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +69,15 @@ public class SysUserServiceImpl implements SysUserService {
 	@Autowired
 	private SysUserMapper sysUserMapper;
 
+	@Autowired
+    private SysDeptMapper sysDeptMapper;
+
+	@Autowired
+    private SysJobMapper sysJobMapper;
+
+	@Autowired
+    private SysUserRoleMapper sysUserRoleMapper;
+
     /**
      * 用户保存
      * @param sysUserSaveOrUpdateVO
@@ -73,10 +89,24 @@ public class SysUserServiceImpl implements SysUserService {
         // 属性赋值
         BeanUtils.copyProperties(sysUserSaveOrUpdateVO, sysUser);
         sysUser.setId(null); // 确保ID为null，默认使用mybatis-plus ID生成策略
+        // 密码加密
+        String encoderPassword = SpringSecurityUtil.encoderPassword(sysUser.getPassword());
+        sysUser.setPassword(encoderPassword);
         // 执行保存
         int row = sysUserMapper.insert(sysUser);
         if (row != 1) {
             ExceptionCast.cast(BaseServerCode.SAVE_ERROR);
+        }
+        // 保存用户关联角色
+        List<String> roleIds = sysUserSaveOrUpdateVO.getRoleIds();
+        if (CollUtil.isNotEmpty(roleIds)) {
+            roleIds.forEach(roleId -> {
+                SysUserRole userRole = new SysUserRole();
+                userRole.setRoleId(roleId);
+                userRole.setUserId(sysUser.getId());
+                sysUserRoleMapper.insert(userRole);
+            });
+            log.info("### 用户角色关联关系保存成功 ###");
         }
         // 转换为VO对象
         SysUserVO sysUserVO = new SysUserVO();
@@ -101,7 +131,13 @@ public class SysUserServiceImpl implements SysUserService {
         if (sysUser == null) {
             ExceptionCast.cast(BaseServerCode.RESULT_DATA_NONE);
         }
-        // 执行删除
+        // 删除用户角色关联关系
+        LambdaQueryWrapper<SysUserRole> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysUserRole::getUserId, id);
+        sysUserRoleMapper.delete(queryWrapper);
+        log.info("### 用户角色关联关系删除完毕 ###");
+
+        // 删除用户
         int row = sysUserMapper.deleteById(id);
         if (row != 1) {
            ExceptionCast.cast(BaseServerCode.DELETE_ERROR);
@@ -115,10 +151,9 @@ public class SysUserServiceImpl implements SysUserService {
         if (CollUtil.isEmpty(ids)) {
             ExceptionCast.cast(BaseServerCode.DEL_IDS_ISEMPTY);
         }
-        int rows = sysUserMapper.deleteBatchIds(ids);
-        if (rows < 1) {
-            ExceptionCast.cast(BaseServerCode.DELETE_ERROR);
-        }
+        ids.forEach(userId -> {
+            delete(userId);
+        });
     }
 
 	/**
@@ -137,14 +172,37 @@ public class SysUserServiceImpl implements SysUserService {
         if (sysUser == null) {
             ExceptionCast.cast(BaseServerCode.RESULT_DATA_NONE);
         }
-
         // 属性赋值
-        BeanUtils.copyProperties(sysUserSaveOrUpdateVO, sysUser);
-        sysUser.setId(id);
+        sysUser.setName(sysUserSaveOrUpdateVO.getName());
+        sysUser.setUsername(sysUserSaveOrUpdateVO.getUsername());
+        sysUser.setDeptId(sysUserSaveOrUpdateVO.getDeptId());
+        sysUser.setJobId(sysUserSaveOrUpdateVO.getJobId());
+        sysUser.setEmail(sysUserSaveOrUpdateVO.getEmail());
+        sysUser.setPhone(sysUserSaveOrUpdateVO.getPhone());
+        sysUser.setAvatar(sysUserSaveOrUpdateVO.getAvatar());
+        sysUser.setStatus(sysUserSaveOrUpdateVO.getStatus());
         // 执行修改
         int row = sysUserMapper.updateById(sysUser);
         if (row != 1) {
            ExceptionCast.cast(BaseServerCode.DELETE_ERROR);
+        }
+
+        // 删除用户角色关联关系
+        LambdaQueryWrapper<SysUserRole> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysUserRole::getUserId, id);
+        sysUserRoleMapper.delete(queryWrapper);
+        log.info("### 用户角色关联关系删除完毕 ###");
+
+        List<String> roleIds = sysUserSaveOrUpdateVO.getRoleIds();
+        if (CollUtil.isNotEmpty(roleIds)) {
+            // 添加新的用户角色关联关系
+            roleIds.forEach(roleId -> {
+                SysUserRole userRole = new SysUserRole();
+                userRole.setUserId(id);
+                userRole.setRoleId(roleId);
+                sysUserRoleMapper.insert(userRole);
+            });
+            log.info("### 用户角色关联关系更新完毕 ###");
         }
         // 转换为VO对象
         SysUserVO sysUserVO = new SysUserVO();
@@ -165,13 +223,7 @@ public class SysUserServiceImpl implements SysUserService {
            ExceptionCast.cast(CommonCode.INVALID_PARAM);
         }
         // 根据ID查询用户
-		SysUser sysUser = sysUserMapper.selectById(id);
-		if (sysUser == null) {
-            return null;
-        }
-        // 转换为VO对象
-        SysUserVO sysUserVO = new SysUserVO();
-        BeanUtils.copyProperties(sysUser, sysUserVO);
+		SysUserVO sysUserVO = sysUserMapper.selectUserById(id);
         log.info("### 用户查询完毕 ###");
         // 返回保存后结果
         return sysUserVO;
@@ -188,20 +240,9 @@ public class SysUserServiceImpl implements SysUserService {
         if (queryConditionVO == null) {
           queryConditionVO = new SysUserQueryConditionVO();
         }
-        // 查询条件
-        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(StringUtils.isNotBlank(queryConditionVO.getName()), SysUser::getName, queryConditionVO.getName());
         // 执行查询
-        List<SysUser> sysUserList = sysUserMapper.selectList(queryWrapper);
-        log.info("### 用户Model模糊查询完毕，总条数：{}条###", sysUserList.size());
-        // 用户转换VO数据
-        List<SysUserVO> sysUserVOList = new ArrayList<>();
-        sysUserList.forEach(sysUser -> {
-            SysUserVO sysUserVO = new SysUserVO();
-            BeanUtils.copyProperties(sysUser, sysUserVO);
-            sysUserVOList.add(sysUserVO);
-        });
-        log.info("### 用户转换VO数据完毕###");
+        List<SysUserVO> sysUserVOList = sysUserMapper.selectUserList(queryConditionVO);
+        log.info("### 用户模糊查询完毕，总条数：{}条###", sysUserVOList.size());
         return sysUserVOList;
     }
 
@@ -218,23 +259,12 @@ public class SysUserServiceImpl implements SysUserService {
         if (queryConditionVO == null) {
           queryConditionVO = new SysUserQueryConditionVO();
         }
-        // 查询条件
-        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(StringUtils.isNotBlank(queryConditionVO.getName()), SysUser::getName, queryConditionVO.getName());
         // 分页条件
-        Page<SysUser> pageInfo = new Page(page, size);
+        Page<SysUserVO> pageInfo = new Page(page, size);
         // 执行查询
-        IPage<SysUser> sysUserPage = sysUserMapper.selectPage(pageInfo, queryWrapper);
-        long total = sysUserPage.getTotal();
-        List<SysUser> sysUserList = sysUserPage.getRecords();
-        // 用户转换VO数据
-        List<SysUserVO> sysUserVOList = new ArrayList<>();
-        sysUserList.forEach(sysUser -> {
-            SysUserVO sysUserVO = new SysUserVO();
-            BeanUtils.copyProperties(sysUser, sysUserVO);
-            sysUserVOList.add(sysUserVO);
-        });
-        log.info("### 用户转换VO数据完毕###");
+        List<SysUserVO> sysUserVOList = sysUserMapper.selectUserList(pageInfo, queryConditionVO);
+        pageInfo.setRecords(sysUserVOList);
+        long total = pageInfo.getTotal();
         // 分装分页查询结果
         return new Pager(total, sysUserVOList);
     }
@@ -247,7 +277,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public ValidateImgVO getImgCode(String type) {
         // 获取图片验证码
-        Captcha imgCode = ImgCodeUtil.getImgCode(type, 111, 36);
+        Captcha imgCode = ImgCodeUtil.getImgCode(type, 150, 46);
         // 获取运算的结果：5
         String result = imgCode.text();
         log.info("### 验证码：{} ###", result);
@@ -302,9 +332,23 @@ public class SysUserServiceImpl implements SysUserService {
             extAttribute.put(jwtProperties.getPermissionsKey(), "apis");
             String token = JwtUtil.createToken(sysUser.getId(), sysUser.getUsername(), extAttribute);
             log.info("### 用户登录成功 ###");
+            // 保存token到redis
+            stringRedisTemplate.opsForValue().set(token, loginUserVO.getUsername());
+            log.info("### redis token 保存成功 ###");
             // 返回token
             return token;
         }
         return null;
+    }
+
+    @Override
+    public void logout(HttpServletRequest request) {
+        // 清除redis 等业务
+        String token = request.getHeader(jwtProperties.getTokenKey());
+        if (StrUtil.isNotBlank(token)) {
+            // 前后端约定头信息内容以 Bearer+空格+token 形式组成
+            stringRedisTemplate.delete(token.replace("Bearer ", ""));
+            log.info("### redis token 删除成功 ###");
+        }
     }
 }

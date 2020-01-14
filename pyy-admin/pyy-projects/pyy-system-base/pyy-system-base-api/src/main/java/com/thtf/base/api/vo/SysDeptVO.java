@@ -1,5 +1,6 @@
 package com.thtf.base.api.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,6 +18,7 @@ import javax.validation.constraints.NotBlank;
  */
 @Data
 @ApiModel(value = "SysDeptVO",description = "部门类")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SysDeptVO {
 	@ApiModelProperty("部门ID")
     private String id;

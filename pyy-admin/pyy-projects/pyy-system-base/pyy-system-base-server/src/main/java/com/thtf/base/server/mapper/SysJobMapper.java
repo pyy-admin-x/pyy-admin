@@ -1,8 +1,6 @@
 package com.thtf.base.server.mapper;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.thtf.base.api.model.SysJob;
 import com.thtf.base.api.vo.SysJobQueryConditionVO;
@@ -10,7 +8,6 @@ import com.thtf.base.api.vo.SysJobVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * ---------------------------
