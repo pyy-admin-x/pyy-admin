@@ -87,12 +87,10 @@ public class JwtInterceptor extends HandlerInterceptorAdapter {
                     String apiCode = requirePermissions.value();
                     // 判断当前用户是否具有相应的请求权限
                     if (permissionList.contains(apiCode)) {
-                        request.setAttribute(USER_CLAIMS, claims);
                         log.info("### 鉴权通过，放行请求 ###");
                         return true;
                     }
                 }
-
                 log.info("### 权限不足，禁止访问 ###");
                 responseError(response, CommonCode.UNAUTHORISE);
             }

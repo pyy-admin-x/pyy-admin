@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -77,5 +78,13 @@ public interface SysMenuControllerApi {
     @ApiOperation(value = "菜单树列表查询", notes = "菜单树列表查询")
     @GetMapping("/sysMenu/treeList")
     ResponseResult<List<SysMenuTreeVO>> getList(SysMenuQueryConditionVO queryConditionVO);
+
+    /**
+     * 菜单树路由列表查询
+     * @return
+     */
+    @ApiOperation(value = "菜单树路由列表查询", notes = "菜单树路由列表查询")
+    @GetMapping("/sysMenu/routeMenus")
+    ResponseResult<List<SysMenuRouteVO>> getRouteMenus(HttpServletRequest request);
 
 }

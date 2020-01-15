@@ -1,10 +1,7 @@
 package com.thtf.base.server.controller;
 
 import com.thtf.base.api.SysMenuControllerApi;
-import com.thtf.base.api.vo.SysMenuQueryConditionVO;
-import com.thtf.base.api.vo.SysMenuSaveOrUpdateVO;
-import com.thtf.base.api.vo.SysMenuTreeVO;
-import com.thtf.base.api.vo.SysMenuVO;
+import com.thtf.base.api.vo.*;
 import com.thtf.base.server.service.SysMenuService;
 import com.thtf.common.core.response.Pager;
 import com.thtf.common.core.response.ResponseResult;
@@ -12,6 +9,7 @@ import com.thtf.common.log.annotation.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -57,6 +55,11 @@ public class SysMenuController implements SysMenuControllerApi {
     @Override
     public ResponseResult<List<SysMenuTreeVO>> getList(SysMenuQueryConditionVO queryConditionVO) {
         return ResponseResult.SUCCESS(sysMenuService.findTreeList(queryConditionVO));
+    }
+
+    @Override
+    public ResponseResult<List<SysMenuRouteVO>> getRouteMenus(HttpServletRequest request) {
+        return ResponseResult.SUCCESS(sysMenuService.getRouteMenus(request));
     }
 
 }

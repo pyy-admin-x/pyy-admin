@@ -49,26 +49,9 @@ service.interceptors.response.use(
           type: 'warning'
         });
       } else if(res.code === 10001 || res.code === 10003 || res.code === 10004 || res.code === 10005) {
-        MessageBox.confirm(
-          '登录状态已过期，您可以继续留在该页面，或者重新登录',
-          '系统提示',
-          {
-            confirmButtonText: '重新登录',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }
-        ).then(() => {
-          store.dispatch('user/logout').then(() => {
-            location.reload() // 为了重新实例化vue-router对象 避免bug
-          })
-        })
+        Notification({ title: '提示', message: '登录状态已过期，请重新登录', type: 'warning'})
       } else {
-        Notification({ title: '提示', message: res.message || 'Error', type: 'error'});
-        // Message({
-        //   message: res.message || 'Error',
-        //   type: 'error',
-        //   duration: 5 * 1000
-        // })
+        Notification({ title: '提示', message: res.message || 'Error', type: 'error'})
       }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {

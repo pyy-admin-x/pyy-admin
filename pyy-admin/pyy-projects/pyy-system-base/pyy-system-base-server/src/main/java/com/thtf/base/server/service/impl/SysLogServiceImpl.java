@@ -7,7 +7,7 @@ import com.thtf.base.api.model.SysLog;
 import com.thtf.base.api.vo.SysLogQueryConditionVO;
 import com.thtf.base.api.vo.SysLogSaveOrUpdateVO;
 import com.thtf.base.api.vo.SysLogVO;
-import com.thtf.base.server.enums.BaseServerCode;
+import com.thtf.base.server.constants.BaseServerCode;
 import com.thtf.base.server.mapper.SysLogMapper;
 import com.thtf.base.server.service.SysLogService;
 import com.thtf.common.core.exception.ExceptionCast;

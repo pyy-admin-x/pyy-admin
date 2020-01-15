@@ -6,11 +6,11 @@ import 'element-ui/lib/theme-chalk/index.css';
 import '@/styles/index.scss' // global css
 import App from './App'
 import store from './store'
-import router from './router'
+import router from './router/routers'
 import './filters' // 加载过滤器
 
 import '@/icons' // icon
-import '@/utils/permission' // permission control
+import '@/router' // permission control
 import '@/mock'
 
 Vue.use(ElementUI)

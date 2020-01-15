@@ -19,11 +19,11 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         // 创建人ID
         if (metaObject.hasSetter("createId")) {
-            this.setFieldValByName("createId", LoginUserUtil.getUserId(), metaObject);
+            this.setFieldValByName("createId", "", metaObject);
         }
         // 创建人名称
         if (metaObject.hasSetter("createName")) {
-            this.setFieldValByName("createName", LoginUserUtil.getUsername(), metaObject);
+            this.setFieldValByName("createName", "", metaObject);
         }
         // 创建时间
         if (metaObject.hasSetter("createTime")) {
@@ -35,11 +35,11 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     public void updateFill(MetaObject metaObject) {
         // 修改人ID
         if (metaObject.hasSetter("updateId")) {
-            this.setFieldValByName("updateId", LoginUserUtil.getUserId(), metaObject);
+            this.setFieldValByName("updateId", "", metaObject);
         }
         // 修改人名称
         if (metaObject.hasSetter("updateName")) {
-            this.setFieldValByName("updateName", LoginUserUtil.getUsername(), metaObject);
+            this.setFieldValByName("updateName", "", metaObject);
         }
         // 修改人时间
         if (metaObject.hasSetter("updateTime")) {

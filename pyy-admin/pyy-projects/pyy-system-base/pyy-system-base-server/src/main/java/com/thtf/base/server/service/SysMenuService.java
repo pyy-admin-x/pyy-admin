@@ -4,6 +4,7 @@ import com.thtf.base.api.vo.*;
 import com.thtf.common.core.response.Pager;
 import com.thtf.common.core.response.ResponseResult;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -64,4 +65,10 @@ public interface SysMenuService {
      * @return
      */
     List<SysMenuTreeVO> findTreeList(SysMenuQueryConditionVO queryConditionVO);
+
+    /**
+     * 菜单路由列表查询
+     * @return
+     */
+    List<SysMenuRouteVO> getRouteMenus(HttpServletRequest request);
 }

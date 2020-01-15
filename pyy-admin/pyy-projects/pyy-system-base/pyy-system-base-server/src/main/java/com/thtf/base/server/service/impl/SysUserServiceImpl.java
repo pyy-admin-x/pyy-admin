@@ -3,19 +3,15 @@ package com.thtf.base.server.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.thtf.base.api.model.SysDept;
-import com.thtf.base.api.model.SysJob;
 import com.thtf.base.api.model.SysUser;
 import com.thtf.base.api.model.SysUserRole;
 import com.thtf.base.api.vo.*;
-import com.thtf.base.server.enums.BaseServerCode;
+import com.thtf.base.server.constants.BaseServerCode;
 import com.thtf.base.server.mapper.*;
 import com.thtf.base.server.service.SysUserService;
 import com.thtf.common.core.constant.CommonConstant;
 import com.thtf.common.core.exception.ExceptionCast;
-import com.thtf.common.core.model.ProfileUser;
 import com.thtf.common.core.properties.JwtProperties;
 import com.thtf.common.core.response.CommonCode;
 import com.thtf.common.core.response.Pager;
@@ -33,7 +29,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -318,7 +313,7 @@ public class SysUserServiceImpl implements SysUserService {
             log.info("### 登录失败：用户不存在或密码错误 ###");
             ExceptionCast.cast(CommonCode.USERNAME_OR_PASSWORD_ERROR);
         }
-        // 用户状态
+        // 判断用户状态
         if (StrUtil.equals(CommonConstant.USER_STATUS_DISABLED, sysUser.getStatus())){
             log.info("### 账号已停用，请联系管理员 ###");
             ExceptionCast.cast(CommonCode.USER_ACCOUNT_FORBIDDEN);
@@ -374,7 +369,7 @@ public class SysUserServiceImpl implements SysUserService {
         return profileVO;
     }
 
-    // 根据id获取配置信息
+    // 根据id获取用户配置信息
     private ProfileVO getProfileVO(String userId) {
         SysUserVO sysUserVO = this.findById(userId);
         ProfileVO profileVO = new ProfileVO();
@@ -383,13 +378,13 @@ public class SysUserServiceImpl implements SysUserService {
         Map<String, Object> roles = new HashMap<>();
         // 取出当前用户拥有所有角色信息
         List<SysRoleVO> roleList = sysUserVO.getRoleList();
-        roles.put("roleList", roleList);
         // 根据角色ids查询关联权限信息
         if (CollUtil.isNotEmpty(roleList)) {
             List<String> roleIds = roleList.stream().map(SysRoleVO::getId).collect(Collectors.toList());
             List<SysMenuVO> menuVOList = sysMenuMapper.selectMenuListByRoleIds(roleIds);
             List<String> permissionList = menuVOList.stream().map(SysMenuVO::getPermission).collect(Collectors.toList());
             roles.put("permissionList", permissionList);
+            roles.put("roleList", roleList);
         }
         profileVO.setRoles(roles);
         return profileVO;

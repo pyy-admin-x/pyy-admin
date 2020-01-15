@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.thtf.base.api.model.SysDept;
 import com.thtf.base.api.vo.SysDeptSaveOrUpdateVO;
 import com.thtf.base.api.vo.SysDeptTreeVO;
-import com.thtf.base.server.enums.BaseServerCode;
+import com.thtf.base.server.constants.BaseServerCode;
 import com.thtf.base.server.mapper.SysDeptMapper;
 import com.thtf.base.server.service.SysDeptService;
 import com.thtf.common.core.exception.ExceptionCast;

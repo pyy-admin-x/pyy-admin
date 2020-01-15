@@ -12,5 +12,4 @@ export const updateMenu = (id, sysMenu) => createAPI(`${BASE_SERVER_API_GATEWAY_
 
 export const deleteMenu = (id) => createAPI(`${BASE_SERVER_API_GATEWAY_URL}/sysMenu/${id}`, 'delete')
 
-
-
+export const getRouteMenus = () => createAPI(`${BASE_SERVER_API_GATEWAY_URL}/sysMenu/routeMenus`, 'get')

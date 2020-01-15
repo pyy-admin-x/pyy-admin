@@ -1,4 +1,4 @@
-package com.thtf.base.server.enums;
+package com.thtf.base.server.constants;
 
 import com.thtf.common.core.response.ResponseCode;
 

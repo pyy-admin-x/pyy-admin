@@ -2,8 +2,6 @@ package com.thtf.base.server.service.impl;
 
 
 import cn.hutool.core.collection.CollUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.thtf.base.api.model.SysDept;
 import com.thtf.base.api.model.SysJob;
@@ -11,7 +9,7 @@ import com.thtf.base.api.vo.SysDeptVO;
 import com.thtf.base.api.vo.SysJobQueryConditionVO;
 import com.thtf.base.api.vo.SysJobSaveOrUpdateVO;
 import com.thtf.base.api.vo.SysJobVO;
-import com.thtf.base.server.enums.BaseServerCode;
+import com.thtf.base.server.constants.BaseServerCode;
 import com.thtf.base.server.mapper.SysDeptMapper;
 import com.thtf.base.server.mapper.SysJobMapper;
 import com.thtf.base.server.service.SysJobService;
@@ -27,10 +25,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**

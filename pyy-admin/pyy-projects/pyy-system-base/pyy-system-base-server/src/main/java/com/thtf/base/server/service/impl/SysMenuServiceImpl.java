@@ -1,18 +1,29 @@
 package com.thtf.base.server.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.thtf.base.api.model.SysDept;
 import com.thtf.base.api.model.SysMenu;
+import com.thtf.base.api.model.SysRoleMenu;
+import com.thtf.base.api.model.SysUserRole;
 import com.thtf.base.api.vo.*;
-import com.thtf.base.server.enums.BaseServerCode;
+import com.thtf.base.server.constants.BaseServerCode;
+import com.thtf.base.server.constants.SystemConstant;
 import com.thtf.base.server.mapper.SysMenuMapper;
+import com.thtf.base.server.mapper.SysRoleMenuMapper;
+import com.thtf.base.server.mapper.SysUserRoleMapper;
 import com.thtf.base.server.service.SysMenuService;
+import com.thtf.common.core.constant.CommonConstant;
 import com.thtf.common.core.exception.ExceptionCast;
+import com.thtf.common.core.properties.JwtProperties;
 import com.thtf.common.core.response.CommonCode;
 import com.thtf.common.core.response.Pager;
+import com.thtf.common.core.utils.JwtUtil;
+import com.thtf.common.core.utils.LoginUserUtil;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -22,8 +33,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * ---------------------------
@@ -39,8 +51,17 @@ import java.util.List;
 @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.DEFAULT,timeout=36000,rollbackFor=Exception.class)
 public class SysMenuServiceImpl implements SysMenuService {
 
+    @Autowired
+    private JwtProperties jwtProperties;
+
 	@Autowired
 	private SysMenuMapper sysMenuMapper;
+
+	@Autowired
+    private SysUserRoleMapper sysUserRoleMapper;
+
+	@Autowired
+    private SysRoleMenuMapper sysRoleMenuMapper;
 
     /**
      * 菜单保存
@@ -232,6 +253,137 @@ public class SysMenuServiceImpl implements SysMenuService {
         });
         return menuTreeVOList;
     }
+
+    /**
+     * 菜单路由列表查询（根据用户ID）
+     * @return
+     */
+    @Override
+    public List<SysMenuRouteVO> getRouteMenus(HttpServletRequest request) {
+        String token = request.getHeader(jwtProperties.getTokenKey());
+        if (StrUtil.isBlank(token)) {
+            ExceptionCast.cast(CommonCode.UNAUTHENTICATED);
+        }
+        Claims claims = JwtUtil.parseToken(token, jwtProperties.getBase64Secret());
+        String userId = JwtUtil.getUserId(claims);
+        log.info("### 当前登录用户ID：{} ###", userId);
+        List<String> roleIds = findRoleByUserId(userId);
+
+        // 查询角色关联所有顶级菜单节点ID集合
+        if (CollUtil.isNotEmpty(roleIds)) {
+            LambdaQueryWrapper<SysRoleMenu> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.in(SysRoleMenu::getRoleId, roleIds);
+            List<SysRoleMenu> sysRoleMenus = sysRoleMenuMapper.selectList(queryWrapper);
+            List<String> menuIds = sysRoleMenus.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
+            if (menuIds != null) {
+                LambdaQueryWrapper<SysMenu> menuQueryWrapper = new LambdaQueryWrapper<>();
+                menuQueryWrapper.in(SysMenu::getId, menuIds)
+                        .in(SysMenu::getType, Arrays.asList(SystemConstant.DIRECTORY, SystemConstant.MENU))
+                        .eq(SysMenu::getDeletedFlag, CommonConstant.UN_DELETED_FLAG);
+                List<SysMenu> sysMenuList = sysMenuMapper.selectList(menuQueryWrapper);
+                // 将sysMenuList转换为sysMenuTreeVOList
+                List<SysMenuTreeVO> sysMenuTreeVOList = new ArrayList<>();
+                sysMenuList.forEach(sysMenu -> {
+                    SysMenuTreeVO menuTreeVO = new SysMenuTreeVO();
+                    BeanUtils.copyProperties(sysMenu, menuTreeVO);
+                    sysMenuTreeVOList.add(menuTreeVO);
+                });
+
+                // 转换菜单树
+                List<SysMenuTreeVO> sysMenuTreeList = buildTree(sysMenuTreeVOList);
+                // 转换路由树
+                List<SysMenuRouteVO> sysMenuRouteVOList = buildMenus(sysMenuTreeList);
+                return sysMenuRouteVOList;
+            }
+        }
+        return null;
+    }
+
+    // 将List<SysMenuTreeVO>转换为List<SysMenuRouteVO>
+    private List<SysMenuRouteVO> buildMenus(List<SysMenuTreeVO> sysMenuTreeList) {
+        List<SysMenuRouteVO> list = new LinkedList<>();
+        sysMenuTreeList.forEach(menuTreeVO -> {
+            if (menuTreeVO != null){
+                List<SysMenuTreeVO> menuTreeVOList = menuTreeVO.getChildren();
+                SysMenuRouteVO menuRouteVO = new SysMenuRouteVO();
+                menuRouteVO.setName(ObjectUtil.isNotEmpty(menuTreeVO.getComponentName())  ? menuTreeVO.getComponentName() : menuTreeVO.getName());
+                // 一级目录需要加斜杠，不然会报警告
+                menuRouteVO.setPath(menuTreeVO.getParentId() == null && !menuTreeVO.getPath().startsWith("/") ? "/" + menuTreeVO.getPath() : menuTreeVO.getPath());
+                menuRouteVO.setHidden(menuTreeVO.getHidden() == SystemConstant.HIDDEN);
+                // 如果不是外链
+                if(menuTreeVO.getIframe() == SystemConstant.NOT_EXTERNAL){
+                    // 一级菜单
+                    if(menuTreeVO.getParentId() == null){
+                        menuRouteVO.setComponent(StrUtil.isEmpty(menuTreeVO.getComponentPath()) ? "Layout" : menuTreeVO.getComponentPath());
+                    } else if(StrUtil.isNotBlank(menuTreeVO.getComponentPath())){
+                        menuRouteVO.setComponent(menuTreeVO.getComponentPath());
+                    }
+                }
+                menuRouteVO.setMeta(new SysMenuMetaVO(menuTreeVO.getName(),menuTreeVO.getIcon(), menuTreeVO.getCache() == SystemConstant.CACHE));
+                if(CollUtil.isNotEmpty(menuTreeVOList)){
+                    menuRouteVO.setAlwaysShow(true);
+                    menuRouteVO.setRedirect("noredirect");
+                    menuRouteVO.setChildren(buildMenus(menuTreeVOList));
+                    // 处理是一级菜单并且没有子菜单的情况
+                } else if(menuTreeVO.getParentId() == null){
+                    SysMenuRouteVO menuRouteVO1 = new SysMenuRouteVO();
+                    menuRouteVO1.setMeta(menuRouteVO.getMeta());
+                    // 非外链
+                    if(menuTreeVO.getIframe() == SystemConstant.NOT_EXTERNAL){
+                        menuRouteVO1.setPath("index");
+                        menuRouteVO1.setName(menuRouteVO.getName());
+                        menuRouteVO1.setComponent(menuRouteVO.getComponent());
+                    } else {
+                        menuRouteVO1.setPath(menuTreeVO.getPath());
+                    }
+                    menuRouteVO.setName(null);
+                    menuRouteVO.setMeta(null);
+                    menuRouteVO.setComponent("Layout");
+                    List<SysMenuRouteVO> list1 = new ArrayList<>();
+                    list1.add(menuRouteVO1);
+                    menuRouteVO.setChildren(list1);
+                }
+                list.add(menuRouteVO);
+            }
+        });
+        return list;
+    }
+
+    // 将sysMenuList转换为tree结构
+    private List<SysMenuTreeVO> buildTree(List<SysMenuTreeVO> sysMenuList) {
+        List<SysMenuTreeVO> trees = new ArrayList<>();
+        Set<String> ids = new HashSet<>();
+        for (SysMenuTreeVO menuTreeVO : sysMenuList) {
+            if (menuTreeVO.getParentId() == null) {
+                trees.add(menuTreeVO);
+            }
+            for (SysMenuTreeVO it : sysMenuList) {
+                if (StrUtil.equals(it.getParentId(), menuTreeVO.getId())) {
+                    if (menuTreeVO.getChildren() == null) {
+                        menuTreeVO.setChildren(new ArrayList<>());
+                    }
+                    menuTreeVO.getChildren().add(it);
+                    ids.add(it.getId());
+                }
+            }
+        }
+        Map<String,Object> map = new HashMap<>();
+        if(trees.size() == 0){
+            trees = sysMenuList.stream().filter(s -> !ids.contains(s.getId())).collect(Collectors.toList());
+        }
+        return trees;
+    }
+
+    // 查询当前登录用户拥有角色ID
+    private List<String> findRoleByUserId(String userId) {
+        LambdaQueryWrapper<SysUserRole> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysUserRole::getUserId, userId);
+        List<SysUserRole> sysUserRoles = sysUserRoleMapper.selectList(queryWrapper);
+        List<String> roleIds = sysUserRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+        log.info("### 当前用户拥有角色ID集合：{} ###", roleIds);
+        return roleIds;
+    }
+
     // 递归查询子节点
     private List<SysMenuTreeVO> findChildrenByParentId(String parentId) {
         if (StringUtils.isBlank(parentId)) {
