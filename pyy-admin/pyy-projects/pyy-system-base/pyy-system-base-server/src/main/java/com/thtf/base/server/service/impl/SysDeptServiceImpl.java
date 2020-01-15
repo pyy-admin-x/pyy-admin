@@ -93,7 +93,6 @@ public class SysDeptServiceImpl implements SysDeptService {
      */
     @Override
     public SysDeptTreeVO update(String id, SysDeptSaveOrUpdateVO sysDeptSaveOrUpdateVO) {
-        ExceptionCast.cast(BaseServerCode.RESULT_DATA_NONE);
         // 参数校验
         if (StringUtils.isBlank(id) || sysDeptSaveOrUpdateVO == null) {
            ExceptionCast.cast(CommonCode.INVALID_PARAM);

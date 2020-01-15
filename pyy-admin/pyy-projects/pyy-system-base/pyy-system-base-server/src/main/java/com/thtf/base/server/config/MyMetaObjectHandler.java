@@ -1,6 +1,7 @@
 package com.thtf.base.server.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.thtf.common.core.utils.LoginUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
@@ -14,24 +15,15 @@ import java.util.Date;
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
 
-    private String userId;
-    private String username;
-
-    public MyMetaObjectHandler() {
-        this.userId = "";
-        this.username = "";
-        log.info("### 当前操用户：userId={}, username={} ###", userId, username);
-    }
-
     @Override
     public void insertFill(MetaObject metaObject) {
         // 创建人ID
         if (metaObject.hasSetter("createId")) {
-            this.setFieldValByName("createId", userId, metaObject);
+            this.setFieldValByName("createId", LoginUserUtil.getUserId(), metaObject);
         }
         // 创建人名称
         if (metaObject.hasSetter("createName")) {
-            this.setFieldValByName("createName", username, metaObject);
+            this.setFieldValByName("createName", LoginUserUtil.getUsername(), metaObject);
         }
         // 创建时间
         if (metaObject.hasSetter("createTime")) {
@@ -43,11 +35,11 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     public void updateFill(MetaObject metaObject) {
         // 修改人ID
         if (metaObject.hasSetter("updateId")) {
-            this.setFieldValByName("updateId", userId, metaObject);
+            this.setFieldValByName("updateId", LoginUserUtil.getUserId(), metaObject);
         }
         // 修改人名称
         if (metaObject.hasSetter("updateName")) {
-            this.setFieldValByName("updateName", username, metaObject);
+            this.setFieldValByName("updateName", LoginUserUtil.getUsername(), metaObject);
         }
         // 修改人时间
         if (metaObject.hasSetter("updateTime")) {
