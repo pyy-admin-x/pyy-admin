@@ -36,6 +36,12 @@
             <artifactId>pyy-common-log</artifactId>
             <version>${pyy.version}</version>
         </dependency>
+        <!-- pyy-common-auth -->
+        <dependency>
+            <groupId>com.thtf</groupId>
+            <artifactId>pyy-common-auth</artifactId>
+            <version>${pyy.version}</version>
+        </dependency>
         <!--web依赖-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

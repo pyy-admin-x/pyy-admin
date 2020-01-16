@@ -156,27 +156,27 @@ export const constantRouterMap = [
   //     },
   //   ]
   // },
-  {
-    path: '/generate',
-    component: Layout,
-    redirect: '/generate/dataSource',
-    name: '代码生成器',
-    meta: { title: '代码生成器', icon: 'code' },
-    children: [
-      {
-        path: '/generate/dataSource',
-        name: '数据源配置',
-        component: () => import('@/views/generate/dataSource/index.vue'),
-        meta: { title: '数据源配置', icon: 'ds' }
-      },
-      {
-        path: '/generate/codeGenerate',
-        name: '代码生成',
-        component: () => import('@/views/generate/codeGenerate/index.vue'),
-        meta: { title: '代码生成', icon: 'multi_table' }
-      }
-    ]
-  },
+  // {
+  //   path: '/generate',
+  //   component: Layout,
+  //   redirect: '/generate/dataSource',
+  //   name: '代码生成器',
+  //   meta: { title: '代码生成器', icon: 'code' },
+  //   children: [
+  //     {
+  //       path: '/generate/dataSource',
+  //       name: '数据源配置',
+  //       component: () => import('@/views/generate/dataSource/index.vue'),
+  //       meta: { title: '数据源配置', icon: 'ds' }
+  //     },
+  //     {
+  //       path: '/generate/codeGenerate',
+  //       name: '代码生成',
+  //       component: () => import('@/views/generate/codeGenerate/index.vue'),
+  //       meta: { title: '代码生成', icon: 'multi_table' }
+  //     }
+  //   ]
+  // },
 ]
 
 const createRouter = () => new Router({

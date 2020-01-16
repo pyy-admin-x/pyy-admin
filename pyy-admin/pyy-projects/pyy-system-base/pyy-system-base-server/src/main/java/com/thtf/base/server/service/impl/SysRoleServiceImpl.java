@@ -63,9 +63,6 @@ public class SysRoleServiceImpl implements SysRoleService {
             ExceptionCast.cast(BaseServerCode.SAVE_ERROR);
         }
         log.info("### 角色表数据添加完毕 ###");
-        // 取出角色关联菜单IDS
-        List<String> menuIds = sysRoleSaveOrUpdateVO.getMenuIds();
-        addRoleMenus(sysRole.getId(), menuIds);
         // 转换为VO对象
         SysRoleVO sysRoleVO = new SysRoleVO();
         BeanUtils.copyProperties(sysRole, sysRoleVO);
@@ -139,13 +136,6 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (sysRole == null) {
             ExceptionCast.cast(BaseServerCode.RESULT_DATA_NONE);
         }
-        // 删除角色关联权限信息
-        LambdaQueryWrapper<SysRoleMenu> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SysRoleMenu::getRoleId, id);
-        sysRoleMenuMapper.delete(queryWrapper);
-        log.info("### 角色关联权限删除完毕 ###");
-        // 重新添加新的关联关系
-        addRoleMenus(id, sysRoleSaveOrUpdateVO.getMenuIds());
         // 属性赋值
         BeanUtils.copyProperties(sysRoleSaveOrUpdateVO, sysRole);
         sysRole.setId(id);
@@ -253,6 +243,17 @@ public class SysRoleServiceImpl implements SysRoleService {
         log.info("### 角色转换VO数据完毕###");
         // 分装分页查询结果
         return new Pager(total, sysRoleVOList);
+    }
+
+    @Override
+    public void setPermissions(String id, List<String> menuIds) {
+        // 删除角色关联权限信息
+        LambdaQueryWrapper<SysRoleMenu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysRoleMenu::getRoleId, id);
+        sysRoleMenuMapper.delete(queryWrapper);
+        log.info("### 角色关联权限删除完毕 ###");
+        // 重新添加新的关联关系
+        addRoleMenus(id, menuIds);
     }
 
     // 添加角色权限关联关系

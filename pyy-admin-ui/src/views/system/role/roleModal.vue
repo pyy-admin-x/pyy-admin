@@ -23,17 +23,6 @@
                      show-word-limit
                      auto-complete="off"/>
         </el-form-item>
-        <el-form-item label="权限列表">
-          <treeselect
-            :multiple="true"
-            :options="menuTreeList"
-            :flat="true"
-            :default-expand-level="2"
-            :limit="3"
-            placeholder="选择权限列表"
-            v-model="roleForm.menuIds"
-          />
-        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" style="text-align: right">
         <el-button type="plain" size="small" @click="handleCancel">关闭</el-button>
@@ -44,13 +33,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  // import the component
-  import Treeselect from '@riophae/vue-treeselect'
-  // import the styles
-  import '@riophae/vue-treeselect/dist/vue-treeselect.css'
   import * as roleAPI from '@/api/system/role/index'
-  import * as menuAPI from '@/api/system/menu/index'
-
   export default {
     name: 'roleModal',
     data () {
@@ -64,7 +47,6 @@
         roleForm: {
           id: '',
           name: '',
-          menuIds: [],
           sort: 1,
           remark: '',
         },
@@ -77,21 +59,12 @@
     mounted () {
     },
     methods: {
-      // 查询菜单树列表
-      async handleQueryMenuTreeList () {
-        const result = await menuAPI.getMenuTreeList()
-        this.menuTreeList = result.data
-      },
       // 打开添加对话框
       openAdd () {
-        // 初始化菜单树列表
-        this.handleQueryMenuTreeList()
         this.visible = true
       },
       // 打开编辑对话框
       openEdit (id) {
-        // 初始化菜单树列表
-        this.handleQueryMenuTreeList()
         this.visible = true
         this.$nextTick(() => {
           // 异步查询
@@ -103,7 +76,6 @@
             this.roleForm.code = role.code
             this.roleForm.sort = role.sort
             this.roleForm.remark = role.remark
-            this.roleForm.menuIds = role.menuIds
           })
         })
       },
@@ -113,7 +85,6 @@
         this.roleForm = {
           id: '',
           name: '',
-          menuIds: [],
           sort: 1,
           remark: '',
         }
@@ -146,7 +117,6 @@
       }
     },
     components: {
-      Treeselect
     }
   }
 </script>

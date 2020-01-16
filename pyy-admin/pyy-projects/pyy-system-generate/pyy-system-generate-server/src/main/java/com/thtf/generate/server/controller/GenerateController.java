@@ -1,5 +1,6 @@
 package com.thtf.generate.server.controller;
 
+import com.thtf.common.auth.token.annonation.RequirePermissions;
 import com.thtf.common.core.response.ResponseResult;
 import com.thtf.generate.api.GenerateControllerApi;
 import com.thtf.generate.api.model.DataSource;
@@ -28,6 +29,7 @@ public class GenerateController implements GenerateControllerApi {
     private GenerateService generateService;
 
     @Override
+    @RequirePermissions("generate")
     public ResponseResult testConnection(DataSource dataSource) {
         boolean success = generateService.testConnection(dataSource);
         if (success) {
@@ -37,16 +39,19 @@ public class GenerateController implements GenerateControllerApi {
     }
 
     @Override
+    @RequirePermissions("generate")
     public ResponseResult<List<Table>> getTables(DataSource dataSource) {
         return ResponseResult.SUCCESS(generateService.getTables(dataSource));
     }
 
     @Override
+    @RequirePermissions("generate")
     public ResponseResult<GenerateModel> getGenerateModel(GenerateModel generateModel) {
         return ResponseResult.SUCCESS(generateService.getGenerateModel(generateModel));
     }
 
     @Override
+    @RequirePermissions("generate")
     public ResponseResult generateModels(GenerateModel generateModel) {
         boolean success = generateService.generateModels(generateModel);
         if (success) {

@@ -10,6 +10,7 @@ import com.thtf.common.log.annotation.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -74,5 +75,12 @@ public class SysRoleController implements SysRoleControllerApi {
     public ResponseResult<Pager<SysRoleVO>> getPageList(SysRoleQueryConditionVO queryConditionVO, int page, int size) {
         return ResponseResult.SUCCESS(sysRoleService.findList(queryConditionVO, page, size));
     }
-	
+
+    @Override
+    @RequirePermissions("system:role:setPermission")
+    public ResponseResult<SysRoleVO> setPermissions(String id, List<String> menuIds) {
+        sysRoleService.setPermissions(id, menuIds);
+        return ResponseResult.SUCCESS();
+    }
+
 }

@@ -65,4 +65,10 @@ public interface SysRoleService {
      */
     Pager<SysRoleVO> findList(SysRoleQueryConditionVO queryConditionVO, int page, int size);
 
+    /**
+     * 分配权限
+     * @param id
+     * @param menuIds
+     */
+    void setPermissions(String id, List<String> menuIds);
 }

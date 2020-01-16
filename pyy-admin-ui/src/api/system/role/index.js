@@ -15,3 +15,6 @@ export const updateRole = (id, sysRole) => createAPI(`${BASE_SERVER_API_GATEWAY_
 export const deleteRole = (id) => createAPI(`${BASE_SERVER_API_GATEWAY_URL}/sysRole/${id}`, 'delete')
 
 export const deleteBatchRole = (ids) => createAPI(`${BASE_SERVER_API_GATEWAY_URL}/sysRole/delBatch`, 'delete', ids)
+
+export const setPermission = (id, menuIds) => createAPI(`${BASE_SERVER_API_GATEWAY_URL}/sysRole/${id}/permissions`, 'put', menuIds)
+

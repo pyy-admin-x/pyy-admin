@@ -27,10 +27,11 @@
           <span>{{ scope.row.createTime | dateFormat}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" width="300">
         <template slot-scope="scope">
           <el-button size="mini" icon="el-icon-edit" type="primary" @click="handleEdit(scope.row.id)">编辑</el-button>
           <el-button size="mini" icon="el-icon-delete" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
+          <el-button size="mini" type="success" @click="handleSetPermission(scope.row.id)"><svg-icon icon-class="permission"/> 授权</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -47,12 +48,15 @@
 
     <!-- 新增或修改角色 -->
     <role-modal ref="roleModal"></role-modal>
+    <!-- 角色授权 -->
+    <role-permission-modal ref="rolePermissionModal"></role-permission-modal>
   </div>
 </template>
 
 <script>
   import * as roleAPI from '@/api/system/role/index'
   import roleModal from './roleModal.vue'
+  import rolePermissionModal from './rolePermissionModal.vue'
 
   export default {
     data() {
@@ -121,6 +125,10 @@
           //this.$message({type: 'info', message: '已取消删除'});
         });
       },
+      handleSetPermission(id) {
+        this.$refs.rolePermissionModal.title = '角色授权'
+        this.$refs.rolePermissionModal.openEdit(id)
+      },
       handleSizeChange(size) {
         this._changePage(this.page, size)
       },
@@ -135,7 +143,8 @@
       },
     },
     components: {
-      roleModal
+      roleModal,
+      rolePermissionModal
     }
   }
 </script>

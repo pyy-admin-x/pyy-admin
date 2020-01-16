@@ -1,5 +1,6 @@
 package com.thtf.generate.server.controller;
 
+import com.thtf.common.auth.token.annonation.RequirePermissions;
 import com.thtf.common.core.response.Pager;
 import com.thtf.common.core.response.ResponseResult;
 import com.thtf.common.log.annotation.Log;
@@ -28,34 +29,40 @@ public class DataSourceController implements DataSourceControllerApi {
     private DataSourceService dataSourceService;
 
     @Override
+    @RequirePermissions("generate:datasource:find")
     public ResponseResult<List<DataSource>> findList(DataSourceQueryConditionVO conditionVO) {
         return ResponseResult.SUCCESS(dataSourceService.findList(conditionVO));
     }
 
     @Override
+    @RequirePermissions("generate:datasource:find")
     public ResponseResult<Pager<DataSource>> findList(int page, int size, DataSourceQueryConditionVO conditionVO) {
         return ResponseResult.SUCCESS(dataSourceService.findList(page, size, conditionVO));
     }
 
     @Override
     @Log(desc = "添加数据源")
+    @RequirePermissions("generate:datasource:add")
     public ResponseResult<DataSource> add(DataSource dataSource) {
         return ResponseResult.SUCCESS(dataSourceService.add(dataSource));
     }
 
     @Override
+    @RequirePermissions("generate:datasource:find")
     public ResponseResult<DataSource> findById(String id) {
         return ResponseResult.SUCCESS(dataSourceService.findById(id));
     }
 
     @Override
     @Log(desc = "修改数据源")
+    @RequirePermissions("generate:datasource:update")
     public ResponseResult<DataSource> edit(String id, DataSource dataSource) {
         return ResponseResult.SUCCESS(dataSourceService.update(id, dataSource));
     }
 
     @Override
     @Log(desc = "删除数据源")
+    @RequirePermissions("generate:datasource:del")
     public ResponseResult delete(String id) {
         dataSourceService.delete(id);
         return ResponseResult.SUCCESS();

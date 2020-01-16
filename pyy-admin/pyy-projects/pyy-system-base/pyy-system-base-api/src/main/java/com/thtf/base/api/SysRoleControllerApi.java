@@ -104,5 +104,19 @@ public interface SysRoleControllerApi {
     ResponseResult<Pager<SysRoleVO>> getPageList(SysRoleQueryConditionVO queryConditionVO,
                                                  @RequestParam(value = "page", defaultValue = "1") int page,
                                                  @RequestParam(value = "size", defaultValue = "10") int size);
+
+    /**
+     * 角色授权
+     * @param id
+     * @param menuIds
+     * @return
+     */
+    @ApiOperation(value = "角色授权", notes = "角色授权")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "角色ID", required = true, dataType = "String", paramType = "path"),
+            @ApiImplicitParam(name = "menuIds", value = "菜单ID集合", required = true, dataType = "List", paramType = "body")
+    })
+    @PutMapping("/sysRole/{id}/permissions")
+    ResponseResult<SysRoleVO> setPermissions(@Valid @PathVariable(value = "id") String id, @RequestBody List<String> menuIds);
 	
 }

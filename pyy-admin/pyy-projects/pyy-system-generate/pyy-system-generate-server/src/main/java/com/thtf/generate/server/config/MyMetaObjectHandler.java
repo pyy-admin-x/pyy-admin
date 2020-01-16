@@ -1,6 +1,8 @@
 package com.thtf.generate.server.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.thtf.common.core.utils.LoginUserUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,20 +13,16 @@ import java.util.Date;
 /**
  * 自动填充配置
  */
+@Slf4j
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(MyMetaObjectHandler.class);
 
-    private String userId;
-    private String username;
-
-    public MyMetaObjectHandler() {
-        this.userId = UserSecurityUtil.getUserId();
-        this.username = UserSecurityUtil.getUsername();
-    }
-
     @Override
     public void insertFill(MetaObject metaObject) {
+        String userId = LoginUserUtil.getUserId();
+        String username = LoginUserUtil.getUsername();
+        log.info("### 当前操作用户： userId={}, username={} ###", userId, username);
         // 创建人ID
         if (metaObject.hasSetter("createId")) {
             this.setFieldValByName("createId", userId, metaObject);
@@ -41,6 +39,9 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
+        String userId = LoginUserUtil.getUserId();
+        String username = LoginUserUtil.getUsername();
+        log.info("### 当前操作用户： userId={}, username={} ###", userId, username);
         // 修改人ID
         if (metaObject.hasSetter("updateId")) {
             this.setFieldValByName("updateId", userId, metaObject);
