@@ -63,7 +63,7 @@
           <el-input v-model="menuForm.componentName"  placeholder="匹配组件内Name字段"/>
         </el-form-item>
         <el-form-item v-show="menuForm.iframe === 0 && menuForm.type == 2" label="组件路径">
-          <el-input v-model="menuForm.component"  placeholder="请输入组件路径"/>
+          <el-input v-model="menuForm.componentPath"  placeholder="请输入组件路径"/>
         </el-form-item>
         <el-form-item label="上级类目" :rules="[{ required: menuForm.type != 1, message: '请选择上级类目', trigger: 'blur' }]">
           <treeselect v-model="menuForm.parentId" :options="menuTreeList" placeholder="选择上级类目" />

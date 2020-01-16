@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -277,8 +278,8 @@ public class SysUserServiceImpl implements SysUserService {
         log.info("### 验证码：{} ###", result);
         String uuid = CODE_KEY + SnowflakeId.getId();
         ValidateImgVO validateImgVO = new ValidateImgVO(imgCode.toBase64(), uuid);
-        // 保存验证码到redis
-        stringRedisTemplate.opsForValue().set(uuid, result);
+        // 保存验证码到redis, 默认10分钟
+        stringRedisTemplate.opsForValue().set(uuid, result, 10, TimeUnit.MINUTES);
         return validateImgVO;
     }
 
@@ -328,8 +329,9 @@ public class SysUserServiceImpl implements SysUserService {
             extAttribute.put(jwtProperties.getRolePremissionKey(), roles);
             String token = JwtUtil.createToken(sysUser.getId(), sysUser.getUsername(), extAttribute);
             log.info("### 用户登录成功 ###");
-            // 保存token到redis
-            stringRedisTemplate.opsForValue().set(token, loginUserVO.getUsername());
+            // 保存token到redis 超时时间设置比本地jwt多10分钟
+            long timtOut = jwtProperties.getExpiresSecond() + 600;
+            stringRedisTemplate.opsForValue().set(token, loginUserVO.getUsername(), timtOut, TimeUnit.SECONDS);
             log.info("### redis token 保存成功 ###");
             // 返回token
             return token;

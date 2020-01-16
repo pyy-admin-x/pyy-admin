@@ -5,6 +5,7 @@ import com.thtf.base.api.vo.SysJobQueryConditionVO;
 import com.thtf.base.api.vo.SysJobSaveOrUpdateVO;
 import com.thtf.base.api.vo.SysJobVO;
 import com.thtf.base.server.service.SysJobService;
+import com.thtf.common.auth.token.annonation.RequirePermissions;
 import com.thtf.common.core.response.Pager;
 import com.thtf.common.core.response.ResponseResult;
 import com.thtf.common.log.annotation.Log;
@@ -31,18 +32,21 @@ public class SysJobController implements SysJobControllerApi {
 
 	@Override
     @Log(desc = "添加岗位")
+    @RequirePermissions("system:job:add")
     public ResponseResult<SysJobVO> save(SysJobSaveOrUpdateVO record) {
         return ResponseResult.SUCCESS(sysJobService.save(record));
     }
 
     @Override
     @Log(desc = "修改岗位")
+    @RequirePermissions("system:job:update")
     public ResponseResult<SysJobVO> update(String id, SysJobSaveOrUpdateVO record) {
         return ResponseResult.SUCCESS(sysJobService.update(id, record));
     }
 
     @Override
     @Log(desc = "删除岗位")
+    @RequirePermissions("system:job:del")
     public ResponseResult delete(String id) {
         sysJobService.delete(id);
         return ResponseResult.SUCCESS();
@@ -50,22 +54,26 @@ public class SysJobController implements SysJobControllerApi {
 
     @Override
     @Log(desc = "批量删除岗位")
+    @RequirePermissions("system:job:delBatch")
     public ResponseResult deleteBatch(@Valid List<String> ids) {
         sysJobService.deleteBatch(ids);
         return ResponseResult.SUCCESS();
     }
 
     @Override
+    @RequirePermissions("system:job:find")
     public ResponseResult<SysJobVO> findById(String id) {
         return ResponseResult.SUCCESS(sysJobService.findById(id));
     }
 
     @Override
+    @RequirePermissions("system:job:find")
     public ResponseResult<List<SysJobVO>> getList(SysJobQueryConditionVO queryConditionVO) {
         return ResponseResult.SUCCESS(sysJobService.findList(queryConditionVO));
     }
 
     @Override
+    @RequirePermissions("system:job:find")
     public ResponseResult<Pager<SysJobVO>> getPageList(SysJobQueryConditionVO queryConditionVO, int page, int size) {
         return ResponseResult.SUCCESS(sysJobService.findList(queryConditionVO, page, size));
     }

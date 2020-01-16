@@ -5,6 +5,7 @@ import com.thtf.base.api.vo.SysLogQueryConditionVO;
 import com.thtf.base.api.vo.SysLogSaveOrUpdateVO;
 import com.thtf.base.api.vo.SysLogVO;
 import com.thtf.base.server.service.SysLogService;
+import com.thtf.common.auth.token.annonation.RequirePermissions;
 import com.thtf.common.core.response.Pager;
 import com.thtf.common.core.response.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,13 @@ public class SysLogController implements SysLogControllerApi {
     private SysLogService sysLogService;
 
     @Override
+    @RequirePermissions("system:log:find")
     public ResponseResult<SysLogVO> findById(String logId) {
         return ResponseResult.SUCCESS(sysLogService.findById(logId));
     }
 
     @Override
+    @RequirePermissions("system:log:find")
     public ResponseResult<Pager<SysLogVO>> findList(int page, int size, SysLogQueryConditionVO queryConditionVO) {
         return ResponseResult.SUCCESS(sysLogService.findList(page, size, queryConditionVO));
     }
@@ -40,6 +43,7 @@ public class SysLogController implements SysLogControllerApi {
         return ResponseResult.SUCCESS(sysLogService.add(sysLogSaveOrUpdateVO));
     }
     @Override
+    @RequirePermissions("system:log:del")
     public ResponseResult delete(String logId) {
         sysLogService.delete(logId);
         return ResponseResult.SUCCESS();

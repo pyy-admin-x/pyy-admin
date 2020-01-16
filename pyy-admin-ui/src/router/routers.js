@@ -130,32 +130,32 @@ export const constantRouterMap = [
       }
     ]
   },
-  {
-    path: '/monitor',
-    component: Layout,
-    redirect: '/monitor/operationLog',
-    name: '系统监控',
-    meta: { title: '系统监控', icon: 'sysMonitor' },
-    children: [
-      {
-        path: '/monitor/operationLog',
-        name: '操作日志',
-        component: () => import('@/views/monitor/operationLog/index.vue'),
-        meta: { title: '操作日志', icon: 'operationLog' }
-      },
-      {
-        path: '/systemMonitoring/exceptionLog',
-        name: '异常日志',
-        component: () => import('@/views/monitor/exceptionLog/index.vue'),
-        meta: { title: '异常日志', icon: 'exceptionLog' }
-      },
-      {
-        path: 'http://10.10.50.189:8848/nacos/',
-        name: '服务监控',
-        meta: { title: '服务监控', icon: 'service-nacos' }
-      },
-    ]
-  },
+  // {
+  //   path: '/monitor',
+  //   component: Layout,
+  //   redirect: '/monitor/operationLog',
+  //   name: '系统监控',
+  //   meta: { title: '系统监控', icon: 'sysMonitor' },
+  //   children: [
+  //     {
+  //       path: '/monitor/operationLog',
+  //       name: '操作日志',
+  //       component: () => import('@/views/monitor/operationLog/index.vue'),
+  //       meta: { title: '操作日志', icon: 'operationLog' }
+  //     },
+  //     {
+  //       path: '/systemMonitoring/exceptionLog',
+  //       name: '异常日志',
+  //       component: () => import('@/views/monitor/exceptionLog/index.vue'),
+  //       meta: { title: '异常日志', icon: 'exceptionLog' }
+  //     },
+  //     {
+  //       path: 'http://10.10.50.189:8848/nacos/',
+  //       name: '服务监控',
+  //       meta: { title: '服务监控', icon: 'service-nacos' }
+  //     },
+  //   ]
+  // },
   {
     path: '/generate',
     component: Layout,

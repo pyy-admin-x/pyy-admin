@@ -21,17 +21,13 @@ router.beforeEach(async(to, from, next) => {
 
   // determine whether the user has logged in
   const hasToken = getToken()
-  console.log('token')
-  console.log(hasToken)
   if (hasToken) {
-    debugger
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
       next({ path: '/' })
       NProgress.done()
     } else {
       const hasGetUserInfo = store.getters.name
-      console.log(hasGetUserInfo + '------------')
       // 判断当前用户是否已拉取完user_info信息
       if (hasGetUserInfo) {
         // 登录时未拉取 菜单，在此处拉取
