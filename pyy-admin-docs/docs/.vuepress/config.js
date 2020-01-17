@@ -8,33 +8,15 @@ module.exports = {
     markdown: {
         lineNumbers: false // 代码块显示行号
     },
+    plugins: ['permalink-pinyin', ['autobar', {'pinyinNav': true}]],
     themeConfig: {
         logo: '/img/logo.png',
         nav: [ // 导航栏配置
-            {text: '指南', link: '/guide/'},
+            {text: '指南', link: '/指南/'},
             {text: 'v1.0', link: '/v1.0/'},
             {text: '博客', link: 'https://www.jianshu.com/u/af08f637aff8'},
             {text: 'Github', link: 'https://github.com/pyy-admin-x'},
 
-        ],
-        // 侧边栏配置
-        sidebar: [
-            {
-                title: '指南',
-                collapsable: false,
-                children: [
-                    '/guide/',
-                    '/guide/Vuex.md',
-                    '/guide/Vue-Router.md',
-                ]
-            },
-            {
-                title: '版本',
-                collapsable: false,
-                children: [
-                    '/v1.0/',
-                ]
-            },
         ],
         sidebarDepth: 1, // 侧边栏显示2级
     }
