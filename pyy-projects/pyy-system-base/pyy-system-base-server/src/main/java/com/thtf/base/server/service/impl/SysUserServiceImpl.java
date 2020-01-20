@@ -29,9 +29,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -49,23 +47,8 @@ import java.util.stream.Collectors;
 @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.DEFAULT,timeout=36000,rollbackFor=Exception.class)
 public class SysUserServiceImpl implements SysUserService {
 
-    /** 验证码前缀 */
-    private static final String CODE_KEY = "img_code_";
-
-    @Autowired
-    private JwtProperties jwtProperties;
-
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
-
 	@Autowired
 	private SysUserMapper sysUserMapper;
-
-	@Autowired
-    private SysDeptMapper sysDeptMapper;
-
-	@Autowired
-    private SysJobMapper sysJobMapper;
 
 	@Autowired
     private SysMenuMapper sysMenuMapper;
@@ -265,119 +248,15 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     /**
-     * 获取图片验证码
-     * @param type
+     * 根据用户名查询用户认证信息
+     * @param username
      * @return
      */
     @Override
-    public ValidateImgVO getImgCode(String type) {
-        // 获取图片验证码
-        Captcha imgCode = ImgCodeUtil.getImgCode(type, 150, 46);
-        // 获取运算的结果：5
-        String result = imgCode.text();
-        log.info("### 验证码：{} ###", result);
-        String uuid = CODE_KEY + SnowflakeId.getId();
-        ValidateImgVO validateImgVO = new ValidateImgVO(imgCode.toBase64(), uuid);
-        // 保存验证码到redis, 默认10分钟
-        stringRedisTemplate.opsForValue().set(uuid, result, 10, TimeUnit.MINUTES);
-        return validateImgVO;
-    }
+    public UserDetailsVO findByUsername(String username) {
+        SysUserVO sysUserVO = sysUserMapper.selectUserByUsername(username);
 
-    /**
-     * 用户登录
-     * @param loginUserVO
-     * @return
-     */
-    @Override
-    public String login(LoginUserVO loginUserVO) {
-        if (loginUserVO == null) {
-            ExceptionCast.cast(CommonCode.INVALID_PARAM);
-        }
-        // 查询验证码
-        String code = stringRedisTemplate.opsForValue().get(loginUserVO.getUuid());
-        // 清除验证码
-        stringRedisTemplate.delete(loginUserVO.getUuid());
-        if (StringUtils.isBlank(code)) {
-            log.debug("### 验证码已过期 ###");
-            ExceptionCast.cast(CommonCode.VALIDATE_CODE_EXPIRED);
-        }
-        if (StringUtils.isBlank(loginUserVO.getCode()) || !loginUserVO.getCode().equals(code)) {
-            log.debug("### 验证码错误 ###");
-            ExceptionCast.cast(CommonCode.VALIDATE_CODE_INVALID);
-        }
-        // 根据用户查询用户
-        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SysUser::getUsername, loginUserVO.getUsername())
-                .eq(SysUser::getDeletedFlag, CommonConstant.UN_DELETED_FLAG);
-        SysUser sysUser = sysUserMapper.selectOne(queryWrapper);
-        if (sysUser == null || !SpringSecurityUtil.checkpassword(loginUserVO.getPassword(), sysUser.getPassword())) {
-            log.info("### 登录失败：用户不存在或密码错误 ###");
-            ExceptionCast.cast(CommonCode.USERNAME_OR_PASSWORD_ERROR);
-        }
-        // 判断用户状态
-        if (StrUtil.equals(CommonConstant.USER_STATUS_DISABLED, sysUser.getStatus())){
-            log.info("### 账号已停用，请联系管理员 ###");
-            ExceptionCast.cast(CommonCode.USER_ACCOUNT_FORBIDDEN);
-        }
-        // 登录成功：生成令牌
-        else {
-            // 获取当前用户的角色和权限信息
-            ProfileVO profileVO = this.getProfileVO(sysUser.getId());
-            Map<String, Object> roles = profileVO.getRoles();
-
-            Map<String, Object> extAttribute = new HashMap<>();
-            extAttribute.put(jwtProperties.getRolePremissionKey(), roles);
-            String token = JwtUtil.createToken(sysUser.getId(), sysUser.getUsername(), extAttribute);
-            log.info("### 用户登录成功 ###");
-            // 保存token到redis 超时时间设置比本地jwt多10分钟
-            long timtOut = jwtProperties.getExpiresSecond() + 600;
-            stringRedisTemplate.opsForValue().set(token, loginUserVO.getUsername(), timtOut, TimeUnit.SECONDS);
-            log.info("### redis token 保存成功 ###");
-            // 返回token
-            return token;
-        }
-        return null;
-    }
-
-    /**
-     * 用户退出
-     * @param request
-     */
-    @Override
-    public void logout(HttpServletRequest request) {
-        // 清除redis 等业务
-        String token = request.getHeader(jwtProperties.getTokenKey());
-        if (StrUtil.isNotBlank(token)) {
-            // 前后端约定头信息内容以 Bearer+空格+token 形式组成
-            stringRedisTemplate.delete(token.replace("Bearer ", ""));
-            log.info("### redis token 删除成功 ###");
-        }
-    }
-
-    /**
-     * 获取当前登录用户配置信息
-     * @return
-     */
-    @Override
-    public ProfileVO getProfileInfo(HttpServletRequest request) {
-        String token = request.getHeader(jwtProperties.getTokenKey());
-        if (StrUtil.isBlank(token)) {
-            ExceptionCast.cast(CommonCode.UNAUTHENTICATED);
-        }
-        Claims claims = JwtUtil.parseToken(token, jwtProperties.getBase64Secret());
-        String userId = JwtUtil.getUserId(claims);
-        log.info("### userId={} ###", userId);
-        ProfileVO profileVO = getProfileVO(userId);
-        return profileVO;
-    }
-
-    // 根据id获取用户配置信息
-    private ProfileVO getProfileVO(String userId) {
-        SysUserVO sysUserVO = this.findById(userId);
-        ProfileVO profileVO = new ProfileVO();
-        BeanUtils.copyProperties(sysUserVO, profileVO);
-
-        Map<String, Object> roles = new HashMap<>();
+        Set<String> permissions = null;
         // 取出当前用户拥有所有角色信息
         List<SysRoleVO> roleList = sysUserVO.getRoleList();
         // 根据角色ids查询关联权限信息
@@ -385,10 +264,12 @@ public class SysUserServiceImpl implements SysUserService {
             List<String> roleIds = roleList.stream().map(SysRoleVO::getId).collect(Collectors.toList());
             List<SysMenuVO> menuVOList = sysMenuMapper.selectMenuListByRoleIds(roleIds);
             List<String> permissionList = menuVOList.stream().map(SysMenuVO::getPermission).collect(Collectors.toList());
-            roles.put("permissionList", permissionList);
-            roles.put("roleList", roleList);
+            permissionList = permissionList.stream().filter(permission -> StrUtil.isNotBlank(permission)).collect(Collectors.toList());
+            permissions = new HashSet(permissionList);
         }
-        profileVO.setRoles(roles);
-        return profileVO;
+        UserDetailsVO userDetailsVO = new UserDetailsVO();
+        userDetailsVO.setSysUser(sysUserVO);
+        userDetailsVO.setPermissions(permissions);
+        return userDetailsVO;
     }
 }

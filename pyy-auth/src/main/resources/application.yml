@@ -1,0 +1,35 @@
+server:
+  port: 9001
+spring:
+  application:
+    name: auth
+  cloud:
+    nacos:
+      discovery:
+        # 指定nacos server的地址
+        server-addr: 10.10.50.189:8848
+
+  #日期格式化配置
+  jackson:
+    date-format: yyyy-MM-dd hh:mm:ss #如果使用字符串表示，用这行设置格式
+    timezone: GMT+8
+    serialization:
+      write-dates-as-timestamps: true #使用时间戳，使用数值timestamp表示日期
+  #redis配置
+  redis:
+    database: 0
+    host: 10.10.50.230
+    port: 6379
+    password: 123456
+    timeout: 5000
+# actuator相关配置
+management:
+  endpoints:
+    web:
+      exposure:
+        # 暴露所有监控端点
+        include: '*'
+  endpoint:
+    health:
+      # 总是显示健康检测详情
+      show-details: always

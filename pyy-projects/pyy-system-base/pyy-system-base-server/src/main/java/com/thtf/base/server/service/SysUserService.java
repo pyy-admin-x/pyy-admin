@@ -1,7 +1,6 @@
 package com.thtf.base.server.service;
 
 import com.thtf.base.api.vo.*;
-import com.thtf.common.core.model.ProfileUser;
 import com.thtf.common.core.response.Pager;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,28 +65,9 @@ public interface SysUserService {
     Pager<SysUserVO> findList(SysUserQueryConditionVO queryConditionVO, int page, int size);
 
     /**
-     * 获取图片验证码
-     * @param type
+     * 根据用户名查询用户相信
+     * @param username
      * @return
      */
-    ValidateImgVO getImgCode(String type);
-
-    /**
-     * 用户登录
-     * @param loginUserVO
-     * @return
-     */
-    String login(LoginUserVO loginUserVO);
-
-    /**
-     * 用户退出
-     * @param request
-     */
-    void logout(HttpServletRequest request);
-
-    /**
-     * 获取当前用户配置信息
-     * @return
-     */
-    ProfileVO getProfileInfo(HttpServletRequest request);
+    UserDetailsVO findByUsername(String username);
 }

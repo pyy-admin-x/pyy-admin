@@ -24,6 +24,8 @@ public interface SysUserMapper extends BaseMapper<SysUser>{
 
     SysUserVO selectUserById(String id);
 
+    SysUserVO selectUserByUsername(@Param("username") String username);
+
     List<SysUserVO> selectUserList(@Param("queryConditionVO") SysUserQueryConditionVO queryConditionVO);
 
     List<SysUserVO> selectUserList(Page<SysUserVO> page, @Param("queryConditionVO") SysUserQueryConditionVO queryConditionVO);

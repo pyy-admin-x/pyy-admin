@@ -25,9 +25,11 @@ public enum CommonCode implements ResponseCode{
     PASSWORD_IS_NULL(40010,"密码不能为空"),
     CODE_IS_NULL(40011,"验证码不能为空"),
     USERNAME_OR_PASSWORD_ERROR(40012, "用户名或密码错误"),
+    USERNAME_NOT_EXISTS(40010,"用户名不存在"),
 
     INVALID_PARAM(40003,"非法参数！"),
     INVALID_REQUEST_METHOD( 40004, "请求方式错误！"),
+    HEADER_NOT_EXISTS_CLIENT(40005,"请求头缺失client信息"),
 
 
     SERVER_ERROR(99999,"抱歉，系统繁忙，请稍后重试！");

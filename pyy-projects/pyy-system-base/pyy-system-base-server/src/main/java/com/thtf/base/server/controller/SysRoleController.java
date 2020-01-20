@@ -30,7 +30,6 @@ public class SysRoleController implements SysRoleControllerApi {
 
     @Override
     @Log(desc = "添加角色")
-    @RequirePermissions("system:role:add")
     public ResponseResult<SysRoleVO> save(SysRoleSaveOrUpdateVO record) {
         return ResponseResult.SUCCESS(sysRoleService.save(record));
     }

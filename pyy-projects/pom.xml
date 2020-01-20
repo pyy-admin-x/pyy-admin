@@ -12,7 +12,7 @@
     <artifactId>pyy-projects</artifactId>
     <packaging>pom</packaging>
 
-    <description>pyy-projects 项目模块</description>
+    <description>pyy-projects 资源微服务模块</description>
     <modules>
         <module>pyy-system-cms</module>
         <module>pyy-system-base</module>

@@ -133,4 +133,36 @@
         and a.id = #{id}
     </select>
 
+    <select id="selectUserByUsername" resultMap="UserResultMap">
+        select
+        a.id,
+        a.name,
+        a.username,
+        a.password,
+        a.email,
+        a.phone,
+        a.avatar,
+        a.status,
+        a.create_id,
+        a.create_name,
+        a.create_time,
+        a.update_id,
+        a.update_name,
+        a.update_time,
+        b.id dept_id,
+        b.name dept_name,
+        c.id job_id,
+        c.name job_name,
+        r.id role_id,
+        r.code role_code,
+        r.name role_name
+        from sys_user a left join sys_dept b on a.dept_id = b.id and b.deleted_flag = 0
+        left join sys_job c on a.job_id = c.id and c.deleted_flag = 0
+        left join sys_user_role ur on a.id = ur.user_id
+        left join sys_role r on ur.role_id = r.id
+        where
+        a.deleted_flag = 0
+        and a.username = #{username}
+    </select>
+
 </mapper>

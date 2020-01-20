@@ -1,4 +1,4 @@
-package com.thtf.base.api.vo;
+package com.thtf.auth.vo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -3,6 +3,7 @@ package com.thtf.base.api;
 import com.thtf.base.api.vo.SysUserQueryConditionVO;
 import com.thtf.base.api.vo.SysUserSaveOrUpdateVO;
 import com.thtf.base.api.vo.SysUserVO;
+import com.thtf.base.api.vo.UserDetailsVO;
 import com.thtf.common.core.response.Pager;
 import com.thtf.common.core.response.ResponseResult;
 import io.swagger.annotations.Api;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
@@ -106,5 +108,15 @@ public interface SysUserControllerApi {
     ResponseResult<Pager<SysUserVO>> getPageList(SysUserQueryConditionVO queryConditionVO,
                                                  @RequestParam(value = "page", defaultValue = "1") int page,
                                                  @RequestParam(value = "size", defaultValue = "10") int size);
+
+    /**
+     * 根据用户名查询
+     * @param username
+     * @return
+     */
+    @ApiOperation(value = "根据用户名查询", notes = "根据用户名查询")
+    @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String", paramType = "query")
+    @GetMapping("/sysUser")
+    ResponseResult<UserDetailsVO> findByUsername(@Valid @NotBlank(message = "用户名不能为空") @RequestParam("username") String username);
 	
 }

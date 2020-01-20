@@ -1,9 +1,5 @@
 package com.thtf.base.api.vo;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.thtf.base.api.model.SysDept;
-import com.thtf.base.api.model.SysJob;
-import com.thtf.base.api.model.SysRole;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
