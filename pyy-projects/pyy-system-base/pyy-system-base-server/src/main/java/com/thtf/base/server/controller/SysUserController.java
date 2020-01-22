@@ -6,13 +6,11 @@ import com.thtf.base.api.vo.SysUserSaveOrUpdateVO;
 import com.thtf.base.api.vo.SysUserVO;
 import com.thtf.base.api.vo.UserDetailsVO;
 import com.thtf.base.server.service.SysUserService;
-import com.thtf.common.auth.token.annonation.RequirePermissions;
 import com.thtf.common.core.response.Pager;
 import com.thtf.common.core.response.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**

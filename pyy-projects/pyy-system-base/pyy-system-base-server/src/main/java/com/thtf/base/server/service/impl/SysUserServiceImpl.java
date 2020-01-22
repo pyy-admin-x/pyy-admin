@@ -8,29 +8,26 @@ import com.thtf.base.api.model.SysUser;
 import com.thtf.base.api.model.SysUserRole;
 import com.thtf.base.api.vo.*;
 import com.thtf.base.server.constants.BaseServerCode;
-import com.thtf.base.server.mapper.*;
+import com.thtf.base.server.mapper.SysMenuMapper;
+import com.thtf.base.server.mapper.SysUserMapper;
+import com.thtf.base.server.mapper.SysUserRoleMapper;
 import com.thtf.base.server.service.SysUserService;
-import com.thtf.common.core.constant.CommonConstant;
 import com.thtf.common.core.exception.ExceptionCast;
-import com.thtf.common.core.properties.JwtProperties;
 import com.thtf.common.core.response.CommonCode;
 import com.thtf.common.core.response.Pager;
-import com.thtf.common.core.utils.*;
-import com.wf.captcha.base.Captcha;
-import io.jsonwebtoken.Claims;
+import com.thtf.common.core.utils.SpringSecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -255,7 +252,9 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public UserDetailsVO findByUsername(String username) {
         SysUserVO sysUserVO = sysUserMapper.selectUserByUsername(username);
-
+        if (sysUserVO == null) {
+            ExceptionCast.cast(CommonCode.USERNAME_NOT_EXISTS);
+        }
         Set<String> permissions = null;
         // 取出当前用户拥有所有角色信息
         List<SysRoleVO> roleList = sysUserVO.getRoleList();

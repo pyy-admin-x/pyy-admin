@@ -21,9 +21,6 @@ import com.thtf.common.core.exception.ExceptionCast;
 import com.thtf.common.core.properties.JwtProperties;
 import com.thtf.common.core.response.CommonCode;
 import com.thtf.common.core.response.Pager;
-import com.thtf.common.core.utils.JwtUtil;
-import com.thtf.common.core.utils.LoginUserUtil;
-import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -264,8 +261,10 @@ public class SysMenuServiceImpl implements SysMenuService {
         if (StrUtil.isBlank(token)) {
             ExceptionCast.cast(CommonCode.UNAUTHENTICATED);
         }
-        Claims claims = JwtUtil.parseToken(token, jwtProperties.getBase64Secret());
-        String userId = JwtUtil.getUserId(claims);
+//        Claims claims = JwtUtil.parseToken(token, jwtProperties.getBase64Secret());
+//        String userId = JwtUtil.getUserId(claims);
+        // todo 添加获取用户信息
+        String userId = "";
         log.info("### 当前登录用户ID：{} ###", userId);
         List<String> roleIds = findRoleByUserId(userId);
 

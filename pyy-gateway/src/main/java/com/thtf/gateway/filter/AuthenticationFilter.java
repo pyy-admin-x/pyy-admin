@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.thtf.common.core.properties.JwtProperties;
 import com.thtf.common.core.response.CommonCode;
 import com.thtf.common.core.response.ResponseResult;
-import com.thtf.common.core.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.Data;

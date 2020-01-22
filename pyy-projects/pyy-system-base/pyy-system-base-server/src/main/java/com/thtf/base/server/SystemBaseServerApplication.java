@@ -17,7 +17,6 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @MapperScan("com.thtf.base.server.mapper")
 @ComponentScan(basePackages = "com.thtf")
-@ComponentScan(basePackages = "com.thtf.common.log.feign.config")
 @EnableDiscoveryClient
 @SpringBootApplication
 public class SystemBaseServerApplication {

@@ -32,13 +32,6 @@
             <artifactId>pyy-system-base-api</artifactId>
             <version>${pyy.version}</version>
         </dependency>
-        <!-- pyy-common-auth -->
-        <dependency>
-            <groupId>com.thtf</groupId>
-            <artifactId>pyy-common-auth</artifactId>
-            <version>${pyy.version}</version>
-        </dependency>
-
         <!-- UserAgentUtils -->
         <dependency>
             <groupId>eu.bitwalker</groupId>

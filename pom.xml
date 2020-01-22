@@ -13,7 +13,7 @@
         <module>pyy-common</module>
         <module>pyy-projects</module>
         <module>pyy-gateway</module>
-        <module>pyy-auth</module>
+        <module>pyy-user-auth</module>
     </modules>
 
     <properties>

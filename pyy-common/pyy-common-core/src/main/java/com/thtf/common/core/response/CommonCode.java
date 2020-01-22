@@ -30,7 +30,7 @@ public enum CommonCode implements ResponseCode{
     INVALID_PARAM(40003,"非法参数！"),
     INVALID_REQUEST_METHOD( 40004, "请求方式错误！"),
     HEADER_NOT_EXISTS_CLIENT(40005,"请求头缺失client信息"),
-
+    HEADER_INVALID_CLIENT(40006,"请求头client格式错误"),
 
     SERVER_ERROR(99999,"抱歉，系统繁忙，请稍后重试！");
 

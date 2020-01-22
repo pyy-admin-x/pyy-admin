@@ -10,6 +10,7 @@ import com.thtf.common.core.response.CommonCode;
 import com.thtf.common.core.response.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
@@ -41,7 +42,7 @@ public class PyyUserDetailsService implements UserDetailsService {
         ResponseResult<UserDetailsVO> info = remoteSysUserService.findByUsername(username);
         if (info == null || info.getCode() != CommonCode.SUCCESS.code()) {
             log.debug("### 登录用户：{} 不存在 ###", username);
-            ExceptionCast.cast(CommonCode.USERNAME_IS_NULL);
+            ExceptionCast.cast(CommonCode.USERNAME_NOT_EXISTS);
         }
         UserDetailsVO userDetailsVO = info.getData();
         SysUserVO sysUser = userDetailsVO.getSysUser();
@@ -49,7 +50,8 @@ public class PyyUserDetailsService implements UserDetailsService {
         Collection<? extends GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(permissions.toArray(new String[0]));
 
         // 将sysUser转换为json
-        String principal = JSON.toJSONString(sysUser);
+       // String principal = JSON.toJSONString(sysUser);
+        String principal = sysUser.getUsername();
         UserDetails userDetails = User.withUsername(principal).password(sysUser.getPassword()).authorities(authorities).build();
         return userDetails;
     }
