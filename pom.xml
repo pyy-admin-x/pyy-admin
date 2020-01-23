@@ -14,6 +14,7 @@
         <module>pyy-projects</module>
         <module>pyy-gateway</module>
         <module>pyy-user-auth</module>
+        <module>pyy-common-client</module>
     </modules>
 
     <properties>

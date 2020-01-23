@@ -14,6 +14,7 @@ import com.wf.captcha.base.Captcha;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpResponse;
@@ -49,7 +50,7 @@ public class UserAuthService {
     private StringRedisTemplate stringRedisTemplate;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private LoadBalancerClient loadBalancerClient;
 
     /**
      * 获取图片验证码
@@ -103,6 +104,9 @@ public class UserAuthService {
             log.debug("### 请求头中无client信息 ###");
             ExceptionCast.cast(CommonCode.HEADER_NOT_EXISTS_CLIENT);
         }
+
+        loadBalancerClient.choose()
+
         // 使用OAuth2密码模式获取token
         String authUrl = "http://" + IpUtil.getIpAddr(request) + ":" + request.getServerPort() + "/oauth/token";
         log.info("### authUrl={} ###", authUrl);
@@ -117,10 +121,10 @@ public class UserAuthService {
 
         HttpEntity httpEntity = new HttpEntity<>(headers);
         // 设置restTemplate远程调用时候，对400和401不让报错，正确返回数据
-        restTemplate.setErrorHandler(new DefaultResponseErrorHandler(){
+        restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
             @Override
             public void handleError(ClientHttpResponse response) throws IOException {
-                if(response.getRawStatusCode()!=400 && response.getRawStatusCode()!=401){
+                if(response.getRawStatusCode() != 400 && response.getRawStatusCode() != 401){
                     super.handleError(response);
                 }
             }
